@@ -58,6 +58,13 @@ body {
     -webkit-animation: pulsateHogan .5s infinite linear;
 }
 
+.tester.testclass-thumpah {
+  background-image: url(http://www.imgderp.com/wp-content/uploads/sites/41/2013/09/keep-calm-and-get-to-the-CHOPPA.jpg);
+  background-position: 50% 50%;
+  background-size: contain;
+  color: transparent;
+}
+
 .underlay {
     width: 50%;
     height: 50%;
@@ -100,8 +107,28 @@ body {
     width: 100%;
 }
 
+.underlay.underlay-left-thumpah {
+  width: 50%;
+  float: left;
+  -webkit-animation: thumpahOMG 3s infinite ease-in-out;
+}
+
+.underlay.underlay-right-thumpah {
+  clear: none;
+  float: right;
+  width: 50%;
+  -webkit-animation: thumpahOMG 3s infinite ease-in-out;
+}
+
 @-webkit-keyframes pulsateHogan {
     0% { background-size: 100% 100%; }
     50% { background-size: 150% 150%; }
     100% { background-size: 100% 100%; }
+}
+
+@-webkit-keyframes  thumpahOMG {
+  0% { width: 0% }
+  15% { width: 50% }
+  40% { width: 50% }
+  100% { width: 0% }
 }
