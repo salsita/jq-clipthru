@@ -2,10 +2,10 @@
 (function() {
 
   $.fn.clipthru = function(options) {
-    var addIdToBlocks, allBlocks, allClones, attachListeners, cacheOverlayOffset, clipOverlayClone, collidingBlocks, createOverlayClones, defaults, getAllBlocks, getCollidingBlocks, getCollisionArea, init, overlay, overlayOffset, refresh, settings, updateOverlayClones;
+    var addIdToBlocks, allBlocks, allClones, attachListeners, clipOverlay, collidingBlocks, createOverlayClones, defaults, getAllBlocks, getCollidingBlocks, getCollisionArea, getOverlayOffset, init, overlay, overlayOffset, refresh, settings, updateOverlayClones;
     defaults = {
+      simpleMode: false,
       dataAttribute: 'jq-clipthru',
-      overlayClass: 'jq-clipthru',
       updateOnScroll: true,
       updateOnResize: true,
       updateOnZoom: true,
@@ -34,7 +34,7 @@
       return allBlocks.each(function() {
         var clone;
         clone = overlay.clone();
-        clone.addClass("" + settings.overlayClass + "-clone");
+        clone.addClass("" + settings.dataAttribute + "-clone");
         clone.addClass($(this).data(settings.dataAttribute));
         clone.data("" + settings.dataAttribute + "-id", $(this).data("" + settings.dataAttribute + "-id"));
         if (allClones) {
@@ -50,7 +50,7 @@
           if (!document.body.contains(this)) {
             $(this).insertAfter(overlay);
           }
-          return clipOverlayClone(this, getCollisionArea(collidingBlocks[$(this).data("" + settings.dataAttribute + "-id")]));
+          return clipOverlay(this, getCollisionArea(collidingBlocks[$(this).data("" + settings.dataAttribute + "-id")]));
         } else {
           return $(this).detach();
         }
@@ -65,7 +65,7 @@
       clipOffset.push(overlayOffset.width - (overlayOffset.right - blockOffset.left));
       return clipOffset;
     };
-    cacheOverlayOffset = function() {
+    getOverlayOffset = function() {
       return overlayOffset = overlay.get(0).getBoundingClientRect();
     };
     getCollidingBlocks = function() {
@@ -78,13 +78,26 @@
         }
       });
     };
-    clipOverlayClone = function(clone, offset) {
-      return $(clone).css({
-        'clip': "rect(" + offset[0] + "px " + offset[1] + "px " + offset[2] + "px " + offset[3] + "px)"
-      });
+    clipOverlay = function(clone, offset) {
+      if (settings.simpleMode === 'vertical') {
+        $(clone).css({
+          'clip': "rect(" + offset[0] + "px auto " + offset[2] + "px auto)"
+        });
+        return $(overlay).css({
+          'clip': "rect(" + (-offset[2]) + "px auto " + offset[0] + "px auto)"
+        });
+      } else if (settings.simpleMode === 'horizontal') {
+        return $(clone).css({
+          'clip': "rect(auto " + offset[1] + "px auto " + offset[3] + "px)"
+        });
+      } else {
+        return $(clone).css({
+          'clip': "rect(" + offset[0] + "px " + offset[1] + "px " + offset[2] + "px " + offset[3] + "px)"
+        });
+      }
     };
     refresh = function() {
-      cacheOverlayOffset();
+      getOverlayOffset();
       getCollidingBlocks();
       return updateOverlayClones();
     };

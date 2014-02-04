@@ -2,8 +2,8 @@ $.fn.clipthru = (options) ->
 
   # Default settings.
   defaults =
+    simpleMode: false
     dataAttribute: 'jq-clipthru'
-    overlayClass: 'jq-clipthru'
     updateOnScroll: true
     updateOnResize: true
     updateOnZoom: true
@@ -25,7 +25,7 @@ $.fn.clipthru = (options) ->
   getAllBlocks = ->
     allBlocks = $("[data-#{settings.dataAttribute}]")
 
-  # Give each block a specific id so it's easier to manage the overlay clones.
+  # Give each block a specific id so it's easier to manage the overlay clones.sss
   addIdToBlocks = ->
     i = 0
     allBlocks.each ->
@@ -36,7 +36,7 @@ $.fn.clipthru = (options) ->
   createOverlayClones = ->
     allBlocks.each ->
       clone = overlay.clone()
-      clone.addClass "#{settings.overlayClass}-clone"
+      clone.addClass "#{settings.dataAttribute}-clone"
       clone.addClass $(this).data settings.dataAttribute
       clone.data "#{settings.dataAttribute}-id", $(this).data("#{settings.dataAttribute}-id")
       if allClones
@@ -50,7 +50,7 @@ $.fn.clipthru = (options) ->
       if collidingBlocks.hasOwnProperty $(this).data("#{settings.dataAttribute}-id")
         if not document.body.contains this
           $(this).insertAfter overlay
-        clipOverlayClone this, getCollisionArea(collidingBlocks[$(this).data("#{settings.dataAttribute}-id")])
+        clipOverlay this, getCollisionArea(collidingBlocks[$(this).data("#{settings.dataAttribute}-id")])
       else
         $(this).detach()
 
@@ -64,7 +64,7 @@ $.fn.clipthru = (options) ->
     return clipOffset
 
   # Get offsets of the overlay element.
-  cacheOverlayOffset = ->
+  getOverlayOffset = ->
     overlayOffset = overlay.get(0).getBoundingClientRect()
 
   # Return ids for blocks that collide with the overlay.
@@ -79,12 +79,22 @@ $.fn.clipthru = (options) ->
       (blockOffset.right >= overlayOffset.left)
         collidingBlocks[$(this).data("#{settings.dataAttribute}-id")] = blockOffset
 
-  clipOverlayClone = (clone, offset) ->
-    $(clone).css
-      'clip': "rect(#{offset[0]}px #{offset[1]}px #{offset[2]}px #{offset[3]}px)"
+  clipOverlay = (clone, offset) ->
+    if settings.simpleMode is 'vertical'
+      $(clone).css
+        'clip': "rect(#{offset[0]}px auto #{offset[2]}px auto)"
+
+      $(overlay).css
+        'clip': "rect(#{-offset[2]}px auto #{offset[0]}px auto)"
+    else if settings.simpleMode is 'horizontal'
+      $(clone).css
+        'clip': "rect(auto #{offset[1]}px auto #{offset[3]}px)"
+    else
+      $(clone).css
+        'clip': "rect(#{offset[0]}px #{offset[1]}px #{offset[2]}px #{offset[3]}px)"
 
   refresh = ->
-    cacheOverlayOffset()
+    getOverlayOffset()
     getCollidingBlocks()
     updateOverlayClones()
 
@@ -95,7 +105,6 @@ $.fn.clipthru = (options) ->
   init = ->
     getAllBlocks()
     if allBlocks.length > 0
-      #overlay.addClass settings.overlayClass
       addIdToBlocks()
       createOverlayClones()
       attachListeners()

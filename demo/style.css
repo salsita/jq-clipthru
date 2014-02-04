@@ -65,6 +65,10 @@ body {
   color: transparent;
 }
 
+.jq-clipthru-clone {
+  opacity: .8;
+}
+
 .underlay {
     width: 50%;
     height: 50%;
