@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="jq-clipthru.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="tester">
+    There was a boy<br>
+    A very strange enchanted boy<br>
+    They say he wandered very far<br>
+    Very far, over land and sea<br>
+</div>
+
+<div class="underlay underlay-0" data-jq-clipthru="testclass-0"></div>
+
+<div class="underlay underlay-1" data-jq-clipthru="testclass-1"></div>
+
+<div class="underlay underlay-X" data-jq-clipthru="testclass-X"></div>
+
+<div class="underlay underlay-2" data-jq-clipthru="testclass-2"></div>
+
+<div class="underlay underlay-3" data-jq-clipthru="testclass-3"></div>
+
+<div class="underlay underlay-4" data-jq-clipthru="testclass-4"></div>
+
+<div class="underlay underlay-5" data-jq-clipthru="testclass-0"></div>
+
+<script>
+    $(document).ready(function(){
+        $('.tester').clipthru()
+    })
+</script>
+
+</body>
+</html>
