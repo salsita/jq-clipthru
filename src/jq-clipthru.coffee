@@ -8,6 +8,7 @@ $.fn.clipthru = (options) ->
     updateOnResize: true
     updateOnZoom: true
     autoUpdate: false
+    autoUpdateInterval: 100
     debug: false
 
   # Extend by user settings.
@@ -47,7 +48,8 @@ $.fn.clipthru = (options) ->
   updateOverlayClones = ->
     allClones.each ->
       if collidingBlocks.hasOwnProperty $(this).data("#{settings.dataAttribute}-id")
-        $(this).insertAfter overlay
+        if not document.body.contains this
+          $(this).insertAfter overlay
         clipOverlayClone this, getCollisionArea(collidingBlocks[$(this).data("#{settings.dataAttribute}-id")])
       else
         $(this).detach()
@@ -55,11 +57,10 @@ $.fn.clipthru = (options) ->
   # Calculate the collision offset values for CSS clip.
   getCollisionArea = (blockOffset) ->
     clipOffset = []
-    clipOffset.push (overlayOffset.height - (overlayOffset.bottom - blockOffset.top))
-    clipOffset.push (blockOffset.bottom - overlayOffset.top)
-    clipOffset.push (blockOffset.right - overlayOffset.left)
-    clipOffset.push (overlayOffset.right - blockOffset.left)
-    console.log overlayOffset.height, overlayOffset.bottom, blockOffset.top
+    clipOffset.push overlayOffset.height - (overlayOffset.bottom - blockOffset.top)
+    clipOffset.push blockOffset.right - overlayOffset.left
+    clipOffset.push blockOffset.bottom - overlayOffset.top
+    clipOffset.push overlayOffset.width - (overlayOffset.right - blockOffset.left)
     return clipOffset
 
   # Get offsets of the overlay element.
@@ -78,10 +79,9 @@ $.fn.clipthru = (options) ->
       (blockOffset.right >= overlayOffset.left)
         collidingBlocks[$(this).data("#{settings.dataAttribute}-id")] = blockOffset
 
-  clipOverlayClone = (el, offset) ->
-    $(el).css
-      'clip': "rect(#{offset[0]}px #{offset[2]}px #{offset[1]}px auto)"
-
+  clipOverlayClone = (clone, offset) ->
+    $(clone).css
+      'clip': "rect(#{offset[0]}px #{offset[1]}px #{offset[2]}px #{offset[3]}px)"
 
   refresh = ->
     cacheOverlayOffset()
@@ -100,5 +100,10 @@ $.fn.clipthru = (options) ->
       createOverlayClones()
       attachListeners()
       refresh()
+      clearInterval autoUpdateTimer?
+      if settings.autoUpdate
+        autoUpdateTimer = setInterval (->
+          refresh()
+        ), settings.autoUpdateInterval
 
   init()
