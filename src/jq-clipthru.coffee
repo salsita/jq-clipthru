@@ -4,6 +4,7 @@ $.fn.clipthru = (options) ->
   defaults =
     method: 'cssClip'
     simpleMode: false
+    blockSource: []
     dataAttribute: 'jq-clipthru'
     updateOnScroll: true
     updateOnResize: true
@@ -24,7 +25,14 @@ $.fn.clipthru = (options) ->
 
   # Get all existing blocks.
   getAllBlocks = ->
-    allBlocks = $("[data-#{settings.dataAttribute}]")
+    if settings.blockSource.length > 0
+      for block in settings.blockSource
+        if allBlocks
+          allBlocks = allBlocks.add $(block)
+        else
+          allBlocks = $(block)
+    else
+      allBlocks = $("[data-#{settings.dataAttribute}]")
 
   # Give each block a specific id so it's easier to manage the overlay clones.sss
   addIdToBlocks = ->

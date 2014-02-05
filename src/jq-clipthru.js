@@ -5,6 +5,7 @@
     defaults = {
       method: 'cssClip',
       simpleMode: false,
+      blockSource: [],
       dataAttribute: 'jq-clipthru',
       updateOnScroll: true,
       updateOnResize: true,
@@ -20,7 +21,22 @@
     allClones = null;
     collidingBlocks = [];
     getAllBlocks = function() {
-      return allBlocks = $("[data-" + settings.dataAttribute + "]");
+      var block, _i, _len, _ref, _results;
+      if (settings.blockSource.length > 0) {
+        _ref = settings.blockSource;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          block = _ref[_i];
+          if (allBlocks) {
+            _results.push(allBlocks = allBlocks.add($(block)));
+          } else {
+            _results.push(allBlocks = $(block));
+          }
+        }
+        return _results;
+      } else {
+        return allBlocks = $("[data-" + settings.dataAttribute + "]");
+      }
     };
     addIdToBlocks = function() {
       var i;
