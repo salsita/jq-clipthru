@@ -2,6 +2,7 @@ $.fn.clipthru = (options) ->
 
   # Default settings.
   defaults =
+    method: 'cssClip'
     simpleMode: false
     dataAttribute: 'jq-clipthru'
     updateOnScroll: true
@@ -50,9 +51,13 @@ $.fn.clipthru = (options) ->
       if collidingBlocks.hasOwnProperty $(this).data("#{settings.dataAttribute}-id")
         if not document.body.contains this
           $(this).insertAfter overlay
-        clipOverlay this, getCollisionArea(collidingBlocks[$(this).data("#{settings.dataAttribute}-id")])
+        clipOverlayClone this, getCollisionArea(collidingBlocks[$(this).data("#{settings.dataAttribute}-id")])
+        if settings.simpleMode is 'vertical'
+          clipOverlayOriginal getOtherCollision(collidingBlocks[$(this).data("#{settings.dataAttribute}-id")])
       else
         $(this).detach()
+    if collidingBlocks.length is 0
+      overlay.removeAttr 'style'
 
   # Calculate the collision offset values for CSS clip.
   getCollisionArea = (blockOffset) ->
@@ -61,6 +66,18 @@ $.fn.clipthru = (options) ->
     clipOffset.push blockOffset.right - overlayOffset.left
     clipOffset.push blockOffset.bottom - overlayOffset.top
     clipOffset.push overlayOffset.width - (overlayOffset.right - blockOffset.left)
+    return clipOffset
+
+  getOtherCollision = (blockOffset) ->
+    clipOffset = []
+    if overlayOffset.top <= blockOffset.top
+      clipOffset.push 0
+      clipOffset.push blockOffset.top - overlayOffset.top
+    else if overlayOffset.bottom >= blockOffset.bottom
+      clipOffset.push overlayOffset.height - (overlayOffset.bottom - blockOffset.bottom)
+      clipOffset.push overlayOffset.height
+    else
+      clipOffset = [0, 0]
     return clipOffset
 
   # Get offsets of the overlay element.
@@ -79,19 +96,17 @@ $.fn.clipthru = (options) ->
       (blockOffset.right >= overlayOffset.left)
         collidingBlocks[$(this).data("#{settings.dataAttribute}-id")] = blockOffset
 
-  clipOverlay = (clone, offset) ->
+  clipOverlayClone = (clone, offset) ->
     if settings.simpleMode is 'vertical'
       $(clone).css
         'clip': "rect(#{offset[0]}px auto #{offset[2]}px auto)"
-
-      $(overlay).css
-        'clip': "rect(#{-offset[2]}px auto #{offset[0]}px auto)"
-    else if settings.simpleMode is 'horizontal'
-      $(clone).css
-        'clip': "rect(auto #{offset[1]}px auto #{offset[3]}px)"
     else
       $(clone).css
         'clip': "rect(#{offset[0]}px #{offset[1]}px #{offset[2]}px #{offset[3]}px)"
+
+  clipOverlayOriginal = (offset) ->
+    $(overlay).css
+      'clip': "rect(#{offset[0]}px auto #{offset[1]}px auto)"
 
   refresh = ->
     getOverlayOffset()
