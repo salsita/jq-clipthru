@@ -8,12 +8,14 @@
       dataAttribute: 'jq-clipthru',
       simpleMode: false,
       collisionTarget: null,
+      cloneOnCollision: false,
       blockSource: null,
       angularScope: null,
       angularCompile: null,
       updateOnScroll: true,
       updateOnResize: true,
       updateOnZoom: true,
+      updateOnCSSTransitionEnd: false,
       autoUpdate: false,
       autoUpdateInterval: 100,
       debug: false
@@ -154,9 +156,16 @@
       return updateOverlayClones();
     };
     attachListeners = function() {
-      return $(window).on("" + (settings.updateOnResize ? 'resize' : void 0) + " " + (settings.updateOnScroll ? 'scroll' : void 0), function() {
+      $(window).on("" + (settings.updateOnResize ? 'resize' : void 0) + " " + (settings.updateOnScroll ? 'scroll' : void 0), function() {
         return refresh();
       });
+      if (settings.updateOnCSSTransitionEnd) {
+        return overlay.on('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd', function(event) {
+          if (event.propertyName === settings.updateOnCSSTransitionEnd) {
+            return refresh();
+          }
+        });
+      }
     };
     init = function() {
       var autoUpdateTimer;

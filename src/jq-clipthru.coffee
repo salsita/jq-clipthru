@@ -6,12 +6,14 @@ $.fn.clipthru = (options) ->
     dataAttribute: 'jq-clipthru'
     simpleMode: false
     collisionTarget: null
+    cloneOnCollision: false
     blockSource: null
     angularScope: null
     angularCompile: null
     updateOnScroll: true
     updateOnResize: true
     updateOnZoom: true
+    updateOnCSSTransitionEnd: false
     autoUpdate: false
     autoUpdateInterval: 100
     debug: false
@@ -137,6 +139,11 @@ $.fn.clipthru = (options) ->
   attachListeners = ->
     $(window).on "#{'resize' if settings.updateOnResize} #{'scroll' if settings.updateOnScroll}", ->
       refresh()
+
+    if settings.updateOnCSSTransitionEnd
+      overlay.on 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd', (event) ->
+        if event.propertyName is settings.updateOnCSSTransitionEnd
+          refresh()
 
   init = ->
     getAllBlocks()
