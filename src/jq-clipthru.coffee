@@ -2,11 +2,13 @@ $.fn.clipthru = (options) ->
 
   # Default settings.
   defaults =
-    method: 'css'
-    simpleMode: false
-    blockSource: false
-    overlayCloneTarget: false
+    method: ['clip', 'clip-path']
     dataAttribute: 'jq-clipthru'
+    simpleMode: false
+    collisionTarget: null
+    blockSource: null
+    angularScope: null
+    angularCompile: null
     updateOnScroll: true
     updateOnResize: true
     updateOnZoom: true
@@ -19,11 +21,12 @@ $.fn.clipthru = (options) ->
 
   # Some top scope properties.
   overlay = $(this)
-  if settings.overlayCloneTarget
-    overlayCloneTarget =  settings.overlayCloneTarget
-  else
-    overlayCloneTarget = overlay
   overlayOffset = null
+  if settings.collisionTarget
+    collisionTarget = $(overlay.find(settings.collisionTarget).get(0))
+  else
+    collisionTarget = overlay
+  collisionTargetOffset = null
   allBlocks = null
   allClones = null
   collidingBlocks = []
@@ -39,6 +42,11 @@ $.fn.clipthru = (options) ->
     else
       allBlocks = $("[data-#{settings.dataAttribute}]")
 
+  # Get offsets of the overlay element.
+  getOverlayOffset = ->
+    overlayOffset = overlay.get(0).getBoundingClientRect()
+    collisionTargetOffset = collisionTarget.get(0).getBoundingClientRect()
+
   # Give each block a specific id so it's easier to manage the overlay clones.
   addIdToBlocks = ->
     i = 0
@@ -49,7 +57,7 @@ $.fn.clipthru = (options) ->
   # Create an overlay clone for each potential block and keep it cached.
   createOverlayClones = ->
     allBlocks.each ->
-      clone = overlayCloneTarget.clone()
+      clone = overlay.clone()
       clone.addClass "#{settings.dataAttribute}-clone"
       clone.addClass $(this).data settings.dataAttribute
       clone.data "#{settings.dataAttribute}-id", $(this).data("#{settings.dataAttribute}-id")
@@ -61,12 +69,15 @@ $.fn.clipthru = (options) ->
   # Show or hide the colliding overlay clones.
   updateOverlayClones = ->
     allClones.each ->
-      if collidingBlocks.hasOwnProperty $(this).data("#{settings.dataAttribute}-id")
+      id = $(this).data("#{settings.dataAttribute}-id")
+      if collidingBlocks.hasOwnProperty id
         if not document.body.contains this
-          $(this).insertAfter overlayCloneTarget
-        clipOverlayClone this, getCollisionArea(collidingBlocks[$(this).data("#{settings.dataAttribute}-id")])
+          $(this).insertAfter overlay
+          if settings.angularScope
+            settings.angularCompile($(this).contents())(settings.angularScope)
+        clipOverlayClone this, getCollisionArea(collidingBlocks[id])
         if settings.simpleMode is 'vertical'
-          clipOverlayOriginal getOtherCollision(collidingBlocks[$(this).data("#{settings.dataAttribute}-id")])
+          clipOverlayOriginal getRelativeCollision(collidingBlocks[id])
       else
         $(this).detach()
     if collidingBlocks.length is 0
@@ -81,21 +92,17 @@ $.fn.clipthru = (options) ->
     clipOffset.push overlayOffset.width - (overlayOffset.right - blockOffset.left)
     return clipOffset
 
-  getOtherCollision = (blockOffset) ->
+  getRelativeCollision = (blockOffset) ->
     clipOffset = []
-    if overlayOffset.top <= blockOffset.top
+    if collisionTargetOffset.top <= blockOffset.top
       clipOffset.push 0
       clipOffset.push blockOffset.top - overlayOffset.top
-    else if overlayOffset.bottom >= blockOffset.bottom
+    else if collisionTargetOffset.bottom >= blockOffset.bottom
       clipOffset.push overlayOffset.height - (overlayOffset.bottom - blockOffset.bottom)
-      clipOffset.push overlayOffset.height
+      clipOffset.push overlayOffset.bottom
     else
       clipOffset = [0, 0]
     return clipOffset
-
-  # Get offsets of the overlay element.
-  getOverlayOffset = ->
-    overlayOffset = overlay.get(0).getBoundingClientRect()
 
   # Return ids for blocks that collide with the overlay.
   getCollidingBlocks = ->
@@ -103,15 +110,13 @@ $.fn.clipthru = (options) ->
     allBlocks.each ->
       # Does the block collide with the overlay?
       blockOffset = this.getBoundingClientRect()
-      if (blockOffset.bottom >= overlayOffset.top) and
-      (blockOffset.top <= overlayOffset.bottom) and
-      (blockOffset.left <= overlayOffset.right) and
-      (blockOffset.right >= overlayOffset.left)
+      if (blockOffset.bottom >= collisionTargetOffset.top) and
+      (blockOffset.top <= collisionTargetOffset.bottom) and
+      (blockOffset.left <= collisionTargetOffset.right) and
+      (blockOffset.right >= collisionTargetOffset.left)
         collidingBlocks[$(this).data("#{settings.dataAttribute}-id")] = blockOffset
 
   clipOverlayClone = (clone, offset) ->
-    if settings.overlayCloneTarget
-      clone = $(clone).find(".#{settings.dataAttribute}-origin").get(0)
     if settings.simpleMode is 'vertical'
       $(clone).css
         'clip': "rect(#{offset[0]}px auto #{offset[2]}px auto)"
@@ -120,7 +125,7 @@ $.fn.clipthru = (options) ->
         'clip': "rect(#{offset[0]}px #{offset[1]}px #{offset[2]}px #{offset[3]}px)"
 
   clipOverlayOriginal = (offset) ->
-    $(overlay).css
+    overlay.css
       'clip': "rect(#{offset[0]}px auto #{offset[1]}px auto)"
 
   refresh = ->
@@ -135,7 +140,7 @@ $.fn.clipthru = (options) ->
   init = ->
     getAllBlocks()
     if allBlocks.length > 0
-      overlay.addClass "#{settings.dataAttribute}-origin"
+      collisionTarget.addClass "#{settings.dataAttribute}-origin"
       addIdToBlocks()
       createOverlayClones()
       attachListeners()
