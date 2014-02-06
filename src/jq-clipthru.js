@@ -94,7 +94,9 @@
         }
       });
       if (collidingBlocks.length === 0) {
-        return overlay.removeAttr('style');
+        return overlay.css({
+          'clip': 'rect(auto auto auto auto)'
+        });
       }
     };
     getCollisionArea = function(blockOffset) {

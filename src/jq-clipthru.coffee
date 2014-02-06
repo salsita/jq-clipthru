@@ -81,7 +81,8 @@ $.fn.clipthru = (options) ->
       else
         $(this).detach()
     if collidingBlocks.length is 0
-      overlay.removeAttr 'style'
+      overlay.css
+        'clip': 'rect(auto auto auto auto)'
 
   # Calculate the collision offset values for CSS clip.
   getCollisionArea = (blockOffset) ->
