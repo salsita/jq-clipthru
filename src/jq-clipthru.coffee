@@ -156,7 +156,7 @@ $.fn.clipthru = (options) ->
 
     if settings.updateOnCSSTransitionEnd
       overlay.on 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd', (event) ->
-        if event.propertyName is settings.updateOnCSSTransitionEnd
+        if event.originalEvent.propertyName is settings.updateOnCSSTransitionEnd
           refresh()
 
   init = ->

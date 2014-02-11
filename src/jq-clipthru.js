@@ -180,7 +180,7 @@
       });
       if (settings.updateOnCSSTransitionEnd) {
         return overlay.on('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd', function(event) {
-          if (event.propertyName === settings.updateOnCSSTransitionEnd) {
+          if (event.originalEvent.propertyName === settings.updateOnCSSTransitionEnd) {
             return refresh();
           }
         });
