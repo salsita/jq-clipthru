@@ -6,7 +6,8 @@ $.fn.clipthru = (options) ->
     dataAttribute: 'jq-clipthru'
     simpleMode: false
     collisionTarget: null
-    cloneOnCollision: false
+    cloneOnCollision: false # Coming soon.
+    keepClonesInHTML: false
     blockSource: null
     angularScope: null
     angularCompile: null
@@ -67,21 +68,34 @@ $.fn.clipthru = (options) ->
         allClones = allClones.add clone
       else
         allClones = clone
+    if settings.keepClonesInHTML
+      allClones.insertAfter overlay
+      if settings.angularScope
+        settings.angularCompile(allClones)(settings.angularScope)
 
   # Show or hide the colliding overlay clones.
   updateOverlayClones = ->
     allClones.each ->
       id = $(this).data("#{settings.dataAttribute}-id")
       if collidingBlocks.hasOwnProperty id
-        if not document.body.contains this
-          $(this).insertAfter overlay
-          if settings.angularScope
-            settings.angularCompile($(this).contents())(settings.angularScope)
+        if settings.keepClonesInHTML
+          $(this).css
+            display: overlay.css 'display'
+        else
+          if not document.body.contains this
+            $(this).insertAfter overlay
+            if settings.angularScope
+              settings.angularCompile($(this).contents())(settings.angularScope)
         clipOverlayClone this, getCollisionArea(collidingBlocks[id])
         if settings.simpleMode is 'vertical'
           clipOverlayOriginal getRelativeCollision(collidingBlocks[id])
       else
-        $(this).detach()
+        if settings.keepClonesInHTML
+          $(this).css
+            display: 'none'
+        else
+          $(this).detach()
+
     if collidingBlocks.length is 0
       overlay.css
         'clip': 'rect(auto auto auto auto)'

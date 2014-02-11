@@ -9,6 +9,7 @@
       simpleMode: false,
       collisionTarget: null,
       cloneOnCollision: false,
+      keepClonesInHTML: false,
       blockSource: null,
       angularScope: null,
       angularCompile: null,
@@ -63,7 +64,7 @@
       });
     };
     createOverlayClones = function() {
-      return allBlocks.each(function() {
+      allBlocks.each(function() {
         var clone;
         clone = overlay.clone();
         clone.addClass("" + settings.dataAttribute + "-clone");
@@ -75,16 +76,28 @@
           return allClones = clone;
         }
       });
+      if (settings.keepClonesInHTML) {
+        allClones.insertAfter(overlay);
+        if (settings.angularScope) {
+          return settings.angularCompile(allClones)(settings.angularScope);
+        }
+      }
     };
     updateOverlayClones = function() {
       allClones.each(function() {
         var id;
         id = $(this).data("" + settings.dataAttribute + "-id");
         if (collidingBlocks.hasOwnProperty(id)) {
-          if (!document.body.contains(this)) {
-            $(this).insertAfter(overlay);
-            if (settings.angularScope) {
-              settings.angularCompile($(this).contents())(settings.angularScope);
+          if (settings.keepClonesInHTML) {
+            $(this).css({
+              display: overlay.css('display')
+            });
+          } else {
+            if (!document.body.contains(this)) {
+              $(this).insertAfter(overlay);
+              if (settings.angularScope) {
+                settings.angularCompile($(this).contents())(settings.angularScope);
+              }
             }
           }
           clipOverlayClone(this, getCollisionArea(collidingBlocks[id]));
@@ -92,7 +105,13 @@
             return clipOverlayOriginal(getRelativeCollision(collidingBlocks[id]));
           }
         } else {
-          return $(this).detach();
+          if (settings.keepClonesInHTML) {
+            return $(this).css({
+              display: 'none'
+            });
+          } else {
+            return $(this).detach();
+          }
         }
       });
       if (collidingBlocks.length === 0) {
