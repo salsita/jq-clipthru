@@ -48,11 +48,13 @@
     # Get all existing blocks.
     _getAllBlocks: ->
       if @options.blockSource
-        for block in @options.blockSource
-          if @allBlocks
-            @allBlocks = @allBlocks.add $(block)
-          else
-            @allBlocks = $(block)
+        for cls, blocks of @options.blockSource
+          for block in blocks
+            $(block).data @options.dataAttribute, cls
+            if @allBlocks
+              @allBlocks = @allBlocks.add $(block)
+            else
+              @allBlocks = $(block)
       else
         @allBlocks = $("[data-#{@options.dataAttribute}]")
 
@@ -87,7 +89,10 @@
       if @options.keepClonesInHTML
         @allClones.insertAfter @element
         if @options.angularScope
-          @options.angularCompile(@allClones)(@options.angularScope)
+          @newAngularScope = @options.angularScope.$new()
+          @options.angularCompile(@allClones)(@newAngularScope)
+          @options.angularScope.$apply()
+          @newAngularScope.$apply()
 
     # Show or hide the colliding overlay clones.
     _updateOverlayClones: ->
@@ -178,6 +183,9 @@
       @_getCollidingBlocks()
       @_updateOverlayClones()
 
+    getNewAngularScope: ->
+      @newAngularScope
+
     destroy: ->
       $(window).off "resize.#{@options.dataAttribute} scroll.#{@options.dataAttribute}"
       clearInterval @autoUpdateTimer
@@ -190,7 +198,7 @@
       @collisionTarget = null
       @collisionTargetOffset = null
       @collidingBlocks = null
-      @_destroy()
+      @_destroy
 
     _destroy: $.noop
 
