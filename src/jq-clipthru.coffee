@@ -164,7 +164,7 @@
         _self.refresh()
 
       if @options.updateOnCSSTransitionEnd
-        @element._on 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd', (event) ->
+        @element.on 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd', (event) ->
           if event.originalEvent.propertyName is _self.options.updateOnCSSTransitionEnd
             _self.refresh()
 

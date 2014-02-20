@@ -197,7 +197,7 @@
           return _self.refresh();
         });
         if (this.options.updateOnCSSTransitionEnd) {
-          return this.element._on('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd', function(event) {
+          return this.element.on('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd', function(event) {
             if (event.originalEvent.propertyName === _self.options.updateOnCSSTransitionEnd) {
               return _self.refresh();
             }
