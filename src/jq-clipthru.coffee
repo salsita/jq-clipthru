@@ -8,6 +8,7 @@
       collisionTarget: null
       cloneOnCollision: false # Coming soon.
       keepClonesInHTML: false
+      removeAttrOnClone: null
       blockSource: null
       angularScope: null
       angularCompile: null
@@ -72,6 +73,8 @@
       _self = this
       @allBlocks.each ->
         clone = _self.element.clone()
+        if _self.options.removeAttrOnClone
+          clone.removeAttr _self.options.removeAttrOnClone
         clone.addClass "#{_self.options.dataAttribute}-clone"
         clone.addClass $(this).data _self.options.dataAttribute
         clone.data "#{_self.options.dataAttribute}-id", $(this).data("#{_self.options.dataAttribute}-id")

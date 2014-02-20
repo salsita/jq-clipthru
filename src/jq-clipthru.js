@@ -10,6 +10,7 @@
         collisionTarget: null,
         cloneOnCollision: false,
         keepClonesInHTML: false,
+        removeAttrOnClone: null,
         blockSource: null,
         angularScope: null,
         angularCompile: null,
@@ -84,6 +85,9 @@
         this.allBlocks.each(function() {
           var clone;
           clone = _self.element.clone();
+          if (_self.options.removeAttrOnClone) {
+            clone.removeAttr(_self.options.removeAttrOnClone);
+          }
           clone.addClass("" + _self.options.dataAttribute + "-clone");
           clone.addClass($(this).data(_self.options.dataAttribute));
           clone.data("" + _self.options.dataAttribute + "-id", $(this).data("" + _self.options.dataAttribute + "-id"));

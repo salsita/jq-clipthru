@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<div class="tester">
+<div class="tester" id="tester-unique">
     There was a boy<br>
     A very strange enchanted boy<br>
     They say he wandered very far<br>
@@ -40,7 +40,8 @@
         $('.tester').clipthru({
             simpleMode: 'vertical',
             autoUpdate: false,
-            autoUpdateInterval: 30
+            autoUpdateInterval: 30,
+            removeAttrOnClone: 'id'
         })
     })
 </script>
