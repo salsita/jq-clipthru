@@ -24,7 +24,7 @@
       _create: function() {
         this.overlayOffset = null;
         if (this.options.collisionTarget) {
-          this.collisionTarget = this.element.find(this.options.collisionTarget).get(0);
+          this.collisionTarget = $(this.element.find(this.options.collisionTarget).get(0));
         } else {
           this.collisionTarget = this.element;
         }

@@ -22,7 +22,7 @@
     _create: ->
       @overlayOffset = null
       if @options.collisionTarget
-        @collisionTarget = @element.find(@options.collisionTarget).get(0)
+        @collisionTarget = $(@element.find(@options.collisionTarget).get(0))
       else
         @collisionTarget = @element
       @collisionTargetOffset = null
