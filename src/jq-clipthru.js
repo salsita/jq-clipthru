@@ -193,7 +193,7 @@
       _attachListeners: function() {
         var _self;
         _self = this;
-        $(window).on("" + (this.options.updateOnResize ? 'resize' : void 0) + " " + (this.options.updateOnScroll ? 'scroll' : void 0), function() {
+        $(window).on("" + (this.options.updateOnResize ? 'resize.' + this.options.dataAttribute : void 0) + " " + (this.options.updateOnScroll ? 'scroll.' + this.options.dataAttribute : void 0), function() {
           return _self.refresh();
         });
         if (this.options.updateOnCSSTransitionEnd) {
@@ -210,7 +210,15 @@
         return this._updateOverlayClones();
       },
       destroy: function() {
-        return console.log("destroy method called");
+        $(window).off("resize." + this.options.dataAttribute + " scroll." + this.options.dataAttribute);
+        this.allClones.remove();
+        this.allBlocks = null;
+        this.allClones = null;
+        this.overlayOffset = null;
+        this.collisionTarget = null;
+        this.collisionTargetOffset = null;
+        this.collidingBlocks = null;
+        return $.Widget.prototype.destroy.apply(this, arguments);
       }
     });
   })(jQuery);

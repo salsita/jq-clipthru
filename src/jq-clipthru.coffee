@@ -160,7 +160,7 @@
 
     _attachListeners: ->
       _self = this
-      $(window).on "#{'resize' if @options.updateOnResize} #{'scroll' if @options.updateOnScroll}", ->
+      $(window).on "#{'resize.' + @options.dataAttribute if @options.updateOnResize} #{'scroll.' + @options.dataAttribute if @options.updateOnScroll}", ->
         _self.refresh()
 
       if @options.updateOnCSSTransitionEnd
@@ -174,6 +174,14 @@
       @_updateOverlayClones()
 
     destroy: ->
-      console.log "destroy method called"
+      $(window).off "resize.#{@options.dataAttribute} scroll.#{@options.dataAttribute}"
+      @allClones.remove()
+      @allBlocks = null
+      @allClones = null
+      @overlayOffset = null
+      @collisionTarget = null
+      @collisionTargetOffset = null
+      @collidingBlocks = null
+      $.Widget::destroy.apply this, arguments
 
 ) jQuery
