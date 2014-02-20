@@ -41,7 +41,6 @@
         @refresh()
         clearInterval @autoUpdateTimer?
         if @options.autoUpdate
-          console.log "ok"
           @autoUpdateTimer = setInterval (->
             _self.refresh()
           ), @options.autoUpdateInterval
@@ -191,6 +190,8 @@
       @collisionTarget = null
       @collisionTargetOffset = null
       @collidingBlocks = null
-      $.Widget::destroy.apply this, arguments
+      @_destroy()
+
+    _destroy: $.noop
 
 ) jQuery

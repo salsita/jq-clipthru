@@ -44,7 +44,6 @@
           this.refresh();
           clearInterval(this.autoUpdateTimer != null);
           if (this.options.autoUpdate) {
-            console.log("ok");
             return this.autoUpdateTimer = setInterval((function() {
               return _self.refresh();
             }), this.options.autoUpdateInterval);
@@ -233,8 +232,9 @@
         this.collisionTarget = null;
         this.collisionTargetOffset = null;
         this.collidingBlocks = null;
-        return $.Widget.prototype.destroy.apply(this, arguments);
-      }
+        return this._destroy();
+      },
+      _destroy: $.noop
     });
   })(jQuery);
 
