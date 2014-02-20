@@ -175,6 +175,8 @@
 
     destroy: ->
       $(window).off "resize.#{@options.dataAttribute} scroll.#{@options.dataAttribute}"
+      @element.css
+        'clip': 'auto auto auto auto'
       @allClones.remove()
       @allBlocks = null
       @allClones = null

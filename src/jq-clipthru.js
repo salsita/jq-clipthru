@@ -211,6 +211,9 @@
       },
       destroy: function() {
         $(window).off("resize." + this.options.dataAttribute + " scroll." + this.options.dataAttribute);
+        this.element.css({
+          'clip': 'auto auto auto auto'
+        });
         this.allClones.remove();
         this.allBlocks = null;
         this.allClones = null;
