@@ -21,6 +21,7 @@
       debug: false
 
     _create: ->
+      _self = this
       @overlayOffset = null
       if @options.collisionTarget
         @collisionTarget = $(@element.find(@options.collisionTarget).get(0))
@@ -40,8 +41,9 @@
         @refresh()
         clearInterval @autoUpdateTimer?
         if @options.autoUpdate
+          console.log "ok"
           @autoUpdateTimer = setInterval (->
-            @refresh()
+            _self.refresh()
           ), @options.autoUpdateInterval
 
     # Get all existing blocks.
@@ -74,7 +76,8 @@
       @allBlocks.each ->
         clone = _self.element.clone()
         if _self.options.removeAttrOnClone
-          clone.removeAttr _self.options.removeAttrOnClone
+          for attr in _self.options.removeAttrOnClone
+            clone.removeAttr attr
         clone.addClass "#{_self.options.dataAttribute}-clone"
         clone.addClass $(this).data _self.options.dataAttribute
         clone.data "#{_self.options.dataAttribute}-id", $(this).data("#{_self.options.dataAttribute}-id")
@@ -178,6 +181,7 @@
 
     destroy: ->
       $(window).off "resize.#{@options.dataAttribute} scroll.#{@options.dataAttribute}"
+      clearInterval @autoUpdateTimer
       @element.css
         'clip': 'auto auto auto auto'
       @allClones.remove()

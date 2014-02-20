@@ -23,6 +23,8 @@
         debug: false
       },
       _create: function() {
+        var _self;
+        _self = this;
         this.overlayOffset = null;
         if (this.options.collisionTarget) {
           this.collisionTarget = $(this.element.find(this.options.collisionTarget).get(0));
@@ -42,8 +44,9 @@
           this.refresh();
           clearInterval(this.autoUpdateTimer != null);
           if (this.options.autoUpdate) {
+            console.log("ok");
             return this.autoUpdateTimer = setInterval((function() {
-              return this.refresh();
+              return _self.refresh();
             }), this.options.autoUpdateInterval);
           }
         }
@@ -83,10 +86,14 @@
         var _self;
         _self = this;
         this.allBlocks.each(function() {
-          var clone;
+          var attr, clone, _i, _len, _ref;
           clone = _self.element.clone();
           if (_self.options.removeAttrOnClone) {
-            clone.removeAttr(_self.options.removeAttrOnClone);
+            _ref = _self.options.removeAttrOnClone;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              attr = _ref[_i];
+              clone.removeAttr(attr);
+            }
           }
           clone.addClass("" + _self.options.dataAttribute + "-clone");
           clone.addClass($(this).data(_self.options.dataAttribute));
@@ -215,6 +222,7 @@
       },
       destroy: function() {
         $(window).off("resize." + this.options.dataAttribute + " scroll." + this.options.dataAttribute);
+        clearInterval(this.autoUpdateTimer);
         this.element.css({
           'clip': 'auto auto auto auto'
         });

@@ -37,11 +37,10 @@
 
 <script>
     $(document).ready(function(){
-        $('.tester').clipthru({
-            simpleMode: 'vertical',
-            autoUpdate: false,
+        $('#tester-unique').clipthru({
+            autoUpdate: true,
             autoUpdateInterval: 30,
-            removeAttrOnClone: 'id'
+            removeAttrOnClone: ['id']
         })
     })
 </script>
