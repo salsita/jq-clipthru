@@ -91,8 +91,6 @@
         if @options.angularScope
           @newAngularScope = @options.angularScope.$new()
           @options.angularCompile(@allClones)(@newAngularScope)
-          @options.angularScope.$apply()
-          @newAngularScope.$apply()
 
     # Show or hide the colliding overlay clones.
     _updateOverlayClones: ->
@@ -187,6 +185,9 @@
       @newAngularScope
 
     destroy: ->
+      console.log "DESTROYING"
+      @newAngularScope.$destroy()
+      console.log "SCOPE", @newAngularScope
       $(window).off "resize.#{@options.dataAttribute} scroll.#{@options.dataAttribute}"
       clearInterval @autoUpdateTimer
       @element.css
@@ -198,7 +199,7 @@
       @collisionTarget = null
       @collisionTargetOffset = null
       @collidingBlocks = null
-      @_destroy
+      @_destroy()
 
     _destroy: $.noop
 
