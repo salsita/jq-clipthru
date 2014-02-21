@@ -189,6 +189,7 @@
       @newAngularScope.$destroy()
       console.log "SCOPE", @newAngularScope
       $(window).off "resize.#{@options.dataAttribute} scroll.#{@options.dataAttribute}"
+      @element.off()
       clearInterval @autoUpdateTimer
       @element.css
         'clip': 'auto auto auto auto'

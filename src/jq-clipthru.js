@@ -237,6 +237,7 @@
         this.newAngularScope.$destroy();
         console.log("SCOPE", this.newAngularScope);
         $(window).off("resize." + this.options.dataAttribute + " scroll." + this.options.dataAttribute);
+        this.element.off();
         clearInterval(this.autoUpdateTimer);
         this.element.css({
           'clip': 'auto auto auto auto'
