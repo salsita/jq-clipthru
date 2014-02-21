@@ -12,6 +12,7 @@
       blockSource: null
       angularScope: null
       angularCompile: null
+      angularCompileNgRepeatLeakFilter: null
       updateOnScroll: true
       updateOnResize: true
       updateOnZoom: true
@@ -90,7 +91,10 @@
         @allClones.insertAfter @element
         if @options.angularScope
           @newAngularScope = @options.angularScope.$new()
-          @options.angularCompile(@allClones)(@newAngularScope)
+          if @options.angularCompileNgRepeatLeakFilter
+            @options.angularCompile(@allClones.find(@options.angularCompileNgRepeatLeakFilter))(@newAngularScope)
+          else
+            @options.angularCompile(@allClones)(@newAngularScope)
 
     # Show or hide the colliding overlay clones.
     _updateOverlayClones: ->
@@ -185,9 +189,7 @@
       @newAngularScope
 
     destroy: ->
-      console.log "DESTROYING"
-      @newAngularScope.$destroy()
-      console.log "SCOPE", @newAngularScope
+      @newAngularScope?.$destroy()
       $(window).off "resize.#{@options.dataAttribute} scroll.#{@options.dataAttribute}"
       @element.off()
       clearInterval @autoUpdateTimer

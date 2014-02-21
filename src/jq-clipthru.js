@@ -14,6 +14,7 @@
         blockSource: null,
         angularScope: null,
         angularCompile: null,
+        angularCompileNgRepeatLeakFilter: null,
         updateOnScroll: true,
         updateOnResize: true,
         updateOnZoom: true,
@@ -116,7 +117,11 @@
           this.allClones.insertAfter(this.element);
           if (this.options.angularScope) {
             this.newAngularScope = this.options.angularScope.$new();
-            return this.options.angularCompile(this.allClones)(this.newAngularScope);
+            if (this.options.angularCompileNgRepeatLeakFilter) {
+              return this.options.angularCompile(this.allClones.find(this.options.angularCompileNgRepeatLeakFilter))(this.newAngularScope);
+            } else {
+              return this.options.angularCompile(this.allClones)(this.newAngularScope);
+            }
           }
         }
       },
@@ -233,9 +238,10 @@
         return this.newAngularScope;
       },
       destroy: function() {
-        console.log("DESTROYING");
-        this.newAngularScope.$destroy();
-        console.log("SCOPE", this.newAngularScope);
+        var _ref;
+        if ((_ref = this.newAngularScope) != null) {
+          _ref.$destroy();
+        }
         $(window).off("resize." + this.options.dataAttribute + " scroll." + this.options.dataAttribute);
         this.element.off();
         clearInterval(this.autoUpdateTimer);
