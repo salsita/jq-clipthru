@@ -14,7 +14,6 @@
         blockSource: null,
         angularScope: null,
         angularCompile: null,
-        angularCompileNgRepeatLeakFilter: null,
         updateOnScroll: true,
         updateOnResize: true,
         updateOnZoom: true,
@@ -115,15 +114,14 @@
         });
         if (this.options.keepClonesInHTML) {
           this.allClones.insertAfter(this.element);
-          if (this.options.angularScope) {
-            this.newAngularScope = this.options.angularScope.$new();
-            if (this.options.angularCompileNgRepeatLeakFilter) {
-              return this.options.angularCompile(this.allClones.find(this.options.angularCompileNgRepeatLeakFilter))(this.newAngularScope);
-            } else {
-              return this.options.angularCompile(this.allClones)(this.newAngularScope);
-            }
+          if (this.options.angularCompile) {
+            return this._angularCompile(this.allClones);
           }
         }
+      },
+      _angularCompile: function(el) {
+        this.newAngularScope = this.options.angularScope.$new();
+        return this.options.angularCompile(el, this.newAngularScope);
       },
       _updateOverlayClones: function() {
         var _self;
@@ -139,8 +137,8 @@
             } else {
               if (!document.body.contains(this)) {
                 $(this).insertAfter(_self.element);
-                if (_self.options.angularScope) {
-                  _self.options.angularCompile($(this).contents())(_self.options.angularScope);
+                if (_self.options.angularCompile) {
+                  _self._angularCompile(this.allClones);
                 }
               }
             }
@@ -233,9 +231,6 @@
         this._getOverlayOffset();
         this._getCollidingBlocks();
         return this._updateOverlayClones();
-      },
-      getNewAngularScope: function() {
-        return this.newAngularScope;
       },
       destroy: function() {
         var _ref;

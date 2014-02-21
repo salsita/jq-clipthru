@@ -12,7 +12,6 @@
       blockSource: null
       angularScope: null
       angularCompile: null
-      angularCompileNgRepeatLeakFilter: null
       updateOnScroll: true
       updateOnResize: true
       updateOnZoom: true
@@ -89,12 +88,12 @@
           _self.allClones = clone
       if @options.keepClonesInHTML
         @allClones.insertAfter @element
-        if @options.angularScope
-          @newAngularScope = @options.angularScope.$new()
-          if @options.angularCompileNgRepeatLeakFilter
-            @options.angularCompile(@allClones.find(@options.angularCompileNgRepeatLeakFilter))(@newAngularScope)
-          else
-            @options.angularCompile(@allClones)(@newAngularScope)
+        if @options.angularCompile
+          @_angularCompile @allClones
+
+    _angularCompile: (el) ->
+      @newAngularScope = @options.angularScope.$new()
+      @options.angularCompile(el, @newAngularScope)
 
     # Show or hide the colliding overlay clones.
     _updateOverlayClones: ->
@@ -108,8 +107,8 @@
           else
             if not document.body.contains this
               $(this).insertAfter _self.element
-              if _self.options.angularScope
-                _self.options.angularCompile($(this).contents())(_self.options.angularScope)
+              if _self.options.angularCompile
+                _self._angularCompile @allClones
           _self._clipOverlayClone this, _self._getCollisionArea(_self.collidingBlocks[id])
           if _self.options.simpleMode is 'vertical'
             _self._clipOverlayOriginal _self._getRelativeCollision(_self.collidingBlocks[id])
@@ -184,9 +183,6 @@
       @_getOverlayOffset()
       @_getCollidingBlocks()
       @_updateOverlayClones()
-
-    getNewAngularScope: ->
-      @newAngularScope
 
     destroy: ->
       @newAngularScope?.$destroy()
