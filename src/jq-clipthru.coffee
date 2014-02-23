@@ -10,8 +10,6 @@
       keepClonesInHTML: false
       removeAttrOnClone: null
       blockSource: null
-      angularScope: null
-      angularCompile: null
       updateOnScroll: true
       updateOnResize: true
       updateOnZoom: true
@@ -39,8 +37,8 @@
       if @allBlocks.length > 0
         @collisionTarget.addClass "#{@options.dataAttribute}-origin"
         @_addIdToBlocks()
-        @_createOverlayClones()
         @_attachListeners()
+        @_createOverlayClones()
         @refresh()
         clearInterval @autoUpdateTimer?
         if @options.autoUpdate
@@ -49,8 +47,7 @@
           ), @options.autoUpdateInterval
 
     _triggerEvent: (name, data) ->
-      @element.trigger name, data
-      console.log "TRIGGER: #{name}", data
+      @element.trigger name, [data]
 
     # Get all existing blocks.
     _getAllBlocks: ->
@@ -95,14 +92,8 @@
           _self.allClones = clone
       if @options.keepClonesInHTML
         @allClones.insertAfter @element
-        if @options.angularCompile
-          @_angularCompile @allClones
       if @options.broadcastEvents
         @_triggerEvent "clonesCreated.#{@options.dataAttribute}", @allClones
-
-    _angularCompile: (el) ->
-      @newAngularScope = @options.angularScope.$new()
-      @options.angularCompile(el, @newAngularScope)
 
     # Show or hide the colliding overlay clones.
     _updateOverlayClones: ->
@@ -116,8 +107,6 @@
           else
             if not document.body.contains this
               $(this).insertAfter _self.element
-              if _self.options.angularCompile
-                _self._angularCompile @allClones
           _self._clipOverlayClone this, _self._getCollisionArea(_self.collidingBlocks[id])
           if _self.options.simpleMode is 'vertical'
             _self._clipOverlayOriginal _self._getRelativeCollision(_self.collidingBlocks[id])
@@ -196,7 +185,6 @@
       @_updateOverlayClones()
 
     destroy: ->
-      @newAngularScope?.$destroy()
       $(window).off "resize.#{@options.dataAttribute} scroll.#{@options.dataAttribute}"
       @element.off()
       clearInterval @autoUpdateTimer

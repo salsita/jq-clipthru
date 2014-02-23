@@ -11,8 +11,6 @@
         keepClonesInHTML: false,
         removeAttrOnClone: null,
         blockSource: null,
-        angularScope: null,
-        angularCompile: null,
         updateOnScroll: true,
         updateOnResize: true,
         updateOnZoom: true,
@@ -42,8 +40,8 @@
         if (this.allBlocks.length > 0) {
           this.collisionTarget.addClass("" + this.options.dataAttribute + "-origin");
           this._addIdToBlocks();
-          this._createOverlayClones();
           this._attachListeners();
+          this._createOverlayClones();
           this.refresh();
           clearInterval(this.autoUpdateTimer != null);
           if (this.options.autoUpdate) {
@@ -54,8 +52,7 @@
         }
       },
       _triggerEvent: function(name, data) {
-        this.element.trigger(name, data);
-        return console.log("TRIGGER: " + name, data);
+        return this.element.trigger(name, [data]);
       },
       _getAllBlocks: function() {
         var block, blocks, cls, _ref, _results;
@@ -121,17 +118,10 @@
         });
         if (this.options.keepClonesInHTML) {
           this.allClones.insertAfter(this.element);
-          if (this.options.angularCompile) {
-            this._angularCompile(this.allClones);
-          }
         }
         if (this.options.broadcastEvents) {
           return this._triggerEvent("clonesCreated." + this.options.dataAttribute, this.allClones);
         }
-      },
-      _angularCompile: function(el) {
-        this.newAngularScope = this.options.angularScope.$new();
-        return this.options.angularCompile(el, this.newAngularScope);
       },
       _updateOverlayClones: function() {
         var _self;
@@ -147,9 +137,6 @@
             } else {
               if (!document.body.contains(this)) {
                 $(this).insertAfter(_self.element);
-                if (_self.options.angularCompile) {
-                  _self._angularCompile(this.allClones);
-                }
               }
             }
             _self._clipOverlayClone(this, _self._getCollisionArea(_self.collidingBlocks[id]));
@@ -246,10 +233,6 @@
         return this._updateOverlayClones();
       },
       destroy: function() {
-        var _ref;
-        if ((_ref = this.newAngularScope) != null) {
-          _ref.$destroy();
-        }
         $(window).off("resize." + this.options.dataAttribute + " scroll." + this.options.dataAttribute);
         this.element.off();
         clearInterval(this.autoUpdateTimer);
