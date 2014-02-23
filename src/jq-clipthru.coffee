@@ -18,10 +18,10 @@
       updateOnCSSTransitionEnd: false
       autoUpdate: false
       autoUpdateInterval: 100
+      broadcastEvents: true
       debug: false
 
     _create: ->
-      _self = this
       @overlayOffset = null
       if @options.collisionTarget
         @collisionTarget = $(@element.find(@options.collisionTarget).get(0))
@@ -31,7 +31,10 @@
       @allBlocks = null
       @allClones = null
       @collidingBlocks = []
+      @_initWidget()
 
+    _initWidget: ->
+      _self = this
       @_getAllBlocks()
       if @allBlocks.length > 0
         @collisionTarget.addClass "#{@options.dataAttribute}-origin"
@@ -44,6 +47,10 @@
           @autoUpdateTimer = setInterval (->
             _self.refresh()
           ), @options.autoUpdateInterval
+
+    _triggerEvent: (name, data) ->
+      @element.trigger name, data
+      console.log "TRIGGER: #{name}", data
 
     # Get all existing blocks.
     _getAllBlocks: ->
@@ -90,6 +97,8 @@
         @allClones.insertAfter @element
         if @options.angularCompile
           @_angularCompile @allClones
+      if @options.broadcastEvents
+        @_triggerEvent "clonesCreated.#{@options.dataAttribute}", @allClones
 
     _angularCompile: (el) ->
       @newAngularScope = @options.angularScope.$new()
@@ -156,6 +165,8 @@
         (blockOffset.left <= _self.collisionTargetOffset.right) and
         (blockOffset.right >= _self.collisionTargetOffset.left)
           _self.collidingBlocks[$(this).data("#{_self.options.dataAttribute}-id")] = blockOffset
+          if _self.options.broadcastEvents
+            _self._triggerEvent "blockCollision.#{_self.options.dataAttribute}", this
 
     _clipOverlayClone: (clone, offset) ->
       if @options.simpleMode is 'vertical'
