@@ -35,6 +35,7 @@
       _self = this
       @_getAllBlocks()
       if @allBlocks.length > 0
+        @_logMessage "#{@allBlocks.length} blocks found"
         @collisionTarget.addClass "#{@options.dataAttribute}-origin"
         @_addIdToBlocks()
         @_attachListeners()
@@ -45,9 +46,16 @@
           @autoUpdateTimer = setInterval (->
             _self.refresh()
           ), @options.autoUpdateInterval
+      else
+        @_logMessage 'no blocks found'
 
     _triggerEvent: (name, data) ->
       @element.trigger name, [data]
+      @_logMessage 'event fired', name
+
+    _logMessage: (action, msg) ->
+      if @options.debug
+        console.debug "#{@options.dataAttribute}: #{action}", msg
 
     # Get all existing blocks.
     _getAllBlocks: ->
@@ -145,6 +153,7 @@
     # Return ids for blocks that collide with the overlay.
     _getCollidingBlocks: ->
       _self = this
+      @collidingBlocksOld = @collidingBlocks
       @collidingBlocks = []
       @allBlocks.each ->
         # Does the block collide with the overlay?
@@ -154,7 +163,7 @@
         (blockOffset.left <= _self.collisionTargetOffset.right) and
         (blockOffset.right >= _self.collisionTargetOffset.left)
           _self.collidingBlocks[$(this).data("#{_self.options.dataAttribute}-id")] = blockOffset
-          if _self.options.broadcastEvents
+          if _self.options.broadcastEvents and !_self.collidingBlocksOld.hasOwnProperty($(this).data("#{_self.options.dataAttribute}-id"))
             _self._triggerEvent "blockCollision.#{_self.options.dataAttribute}", this
 
     _clipOverlayClone: (clone, offset) ->
@@ -197,6 +206,7 @@
       @collisionTarget = null
       @collisionTargetOffset = null
       @collidingBlocks = null
+      @collidingBlocksOld = null
       @_destroy()
 
     _destroy: $.noop

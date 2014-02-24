@@ -38,9 +38,10 @@
 <script>
     $(document).ready(function(){
         $('#tester-unique').clipthru({
-            autoUpdate: false,
+            autoUpdate: true,
             autoUpdateInterval: 30,
-            removeAttrOnClone: ['id']
+            removeAttrOnClone: ['id'],
+            debug: true
         })
     })
 </script>
