@@ -35,7 +35,7 @@
       _self = this
       @_getAllBlocks()
       if @allBlocks.length > 0
-        @_logMessage "#{@allBlocks.length} blocks found"
+        @_logMessage "#{@allBlocks.length} blocks found", @allBlocks
         @collisionTarget.addClass "#{@options.dataAttribute}-origin"
         @_addIdToBlocks()
         @_attachListeners()
@@ -51,11 +51,11 @@
 
     _triggerEvent: (name, data) ->
       @element.trigger name, [data]
-      @_logMessage 'event fired', name
+      @_logMessage name, data
 
-    _logMessage: (action, msg) ->
+    _logMessage: (name, args) ->
       if @options.debug
-        console.debug "#{@options.dataAttribute}: #{action}", msg
+        console.debug "#{@options.dataAttribute}: #{name}", args
 
     # Get all existing blocks.
     _getAllBlocks: ->
@@ -164,7 +164,9 @@
         (blockOffset.right >= _self.collisionTargetOffset.left)
           _self.collidingBlocks[$(this).data("#{_self.options.dataAttribute}-id")] = blockOffset
           if _self.options.broadcastEvents and !_self.collidingBlocksOld.hasOwnProperty($(this).data("#{_self.options.dataAttribute}-id"))
-            _self._triggerEvent "blockCollision.#{_self.options.dataAttribute}", this
+            _self._triggerEvent "blockCollisionStart.#{_self.options.dataAttribute}", this
+        else if _self.options.broadcastEvents and _self.collidingBlocksOld.hasOwnProperty($(this).data("#{_self.options.dataAttribute}-id"))
+            _self._triggerEvent "blockCollisionEnd.#{_self.options.dataAttribute}", this
 
     _clipOverlayClone: (clone, offset) ->
       if @options.simpleMode is 'vertical'

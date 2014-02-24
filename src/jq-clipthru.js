@@ -39,7 +39,7 @@
         _self = this;
         this._getAllBlocks();
         if (this.allBlocks.length > 0) {
-          this._logMessage("" + this.allBlocks.length + " blocks found");
+          this._logMessage("" + this.allBlocks.length + " blocks found", this.allBlocks);
           this.collisionTarget.addClass("" + this.options.dataAttribute + "-origin");
           this._addIdToBlocks();
           this._attachListeners();
@@ -57,11 +57,11 @@
       },
       _triggerEvent: function(name, data) {
         this.element.trigger(name, [data]);
-        return this._logMessage('event fired', name);
+        return this._logMessage(name, data);
       },
-      _logMessage: function(action, msg) {
+      _logMessage: function(name, args) {
         if (this.options.debug) {
-          return console.debug("" + this.options.dataAttribute + ": " + action, msg);
+          return console.debug("" + this.options.dataAttribute + ": " + name, args);
         }
       },
       _getAllBlocks: function() {
@@ -203,8 +203,10 @@
           if ((blockOffset.bottom >= _self.collisionTargetOffset.top) && (blockOffset.top <= _self.collisionTargetOffset.bottom) && (blockOffset.left <= _self.collisionTargetOffset.right) && (blockOffset.right >= _self.collisionTargetOffset.left)) {
             _self.collidingBlocks[$(this).data("" + _self.options.dataAttribute + "-id")] = blockOffset;
             if (_self.options.broadcastEvents && !_self.collidingBlocksOld.hasOwnProperty($(this).data("" + _self.options.dataAttribute + "-id"))) {
-              return _self._triggerEvent("blockCollision." + _self.options.dataAttribute, this);
+              return _self._triggerEvent("blockCollisionStart." + _self.options.dataAttribute, this);
             }
+          } else if (_self.options.broadcastEvents && _self.collidingBlocksOld.hasOwnProperty($(this).data("" + _self.options.dataAttribute + "-id"))) {
+            return _self._triggerEvent("blockCollisionEnd." + _self.options.dataAttribute, this);
           }
         });
       },
