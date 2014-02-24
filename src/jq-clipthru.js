@@ -198,14 +198,15 @@
         this.collidingBlocksOld = this.collidingBlocks;
         this.collidingBlocks = [];
         return this.allBlocks.each(function() {
-          var blockOffset;
+          var blockOffset, wasCollidedBefore;
+          wasCollidedBefore = _self.collidingBlocksOld.hasOwnProperty($(this).data("" + _self.options.dataAttribute + "-id"));
           blockOffset = this.getBoundingClientRect();
           if ((blockOffset.bottom >= _self.collisionTargetOffset.top) && (blockOffset.top <= _self.collisionTargetOffset.bottom) && (blockOffset.left <= _self.collisionTargetOffset.right) && (blockOffset.right >= _self.collisionTargetOffset.left)) {
             _self.collidingBlocks[$(this).data("" + _self.options.dataAttribute + "-id")] = blockOffset;
-            if (_self.options.broadcastEvents && !_self.collidingBlocksOld.hasOwnProperty($(this).data("" + _self.options.dataAttribute + "-id"))) {
+            if (_self.options.broadcastEvents && !wasCollidedBefore) {
               return _self._triggerEvent("collisionStart." + _self.options.dataAttribute, this);
             }
-          } else if (_self.options.broadcastEvents && _self.collidingBlocksOld.hasOwnProperty($(this).data("" + _self.options.dataAttribute + "-id"))) {
+          } else if (_self.options.broadcastEvents && wasCollidedBefore) {
             return _self._triggerEvent("collisionEnd." + _self.options.dataAttribute, this);
           }
         });
