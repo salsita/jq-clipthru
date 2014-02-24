@@ -164,9 +164,9 @@
         (blockOffset.right >= _self.collisionTargetOffset.left)
           _self.collidingBlocks[$(this).data("#{_self.options.dataAttribute}-id")] = blockOffset
           if _self.options.broadcastEvents and !_self.collidingBlocksOld.hasOwnProperty($(this).data("#{_self.options.dataAttribute}-id"))
-            _self._triggerEvent "blockCollisionStart.#{_self.options.dataAttribute}", this
+            _self._triggerEvent "collisionStart.#{_self.options.dataAttribute}", this
         else if _self.options.broadcastEvents and _self.collidingBlocksOld.hasOwnProperty($(this).data("#{_self.options.dataAttribute}-id"))
-            _self._triggerEvent "blockCollisionEnd.#{_self.options.dataAttribute}", this
+            _self._triggerEvent "collisionEnd.#{_self.options.dataAttribute}", this
 
     _clipOverlayClone: (clone, offset) ->
       if @options.simpleMode is 'vertical'
