@@ -8,7 +8,7 @@
       collisionTarget: null
       cloneOnCollision: false # Coming soon.
       keepClonesInHTML: false
-      removeAttrOnClone: null
+      removeAttrOnClone: ['id']
       blockSource: null
       updateOnScroll: true
       updateOnResize: true
