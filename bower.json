@@ -5,7 +5,7 @@
   "authors": [
     "filipnaumovic <filip@salsitasoft.com>"
   ],
-  "description": "Element collision detection plugin that uses CSS and SVG clip-masking for interesting UI effects.",
+  "description": "Element collision detection plugin that uses CSS and SVG clip-masking for unique UI effects.",
   "license": "MIT",
   "ignore": [
     "**/.*",
