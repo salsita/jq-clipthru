@@ -1,0 +1,17 @@
+{
+  "name": "jq-clipthru",
+  "version": "0.3.0",
+  "homepage": "https://github.com/salsita/jq-clipthru",
+  "authors": [
+    "filipnaumovic <filip@salsitasoft.com>"
+  ],
+  "description": "Element collision detection plugin that uses CSS and SVG clip-masking for interesting UI effects.",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
