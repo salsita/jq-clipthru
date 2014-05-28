@@ -196,7 +196,7 @@
       @_getCollidingBlocks()
       @_updateOverlayClones()
 
-    destroy: ->
+    _destroy: ->
       $(window).off "resize.#{@options.dataAttribute} scroll.#{@options.dataAttribute}"
       @element.off()
       clearInterval @autoUpdateTimer
@@ -210,8 +210,5 @@
       @collisionTargetOffset = null
       @collidingBlocks = null
       @collidingBlocksOld = null
-      @_destroy()
-
-    _destroy: $.noop
 
 ) jQuery
