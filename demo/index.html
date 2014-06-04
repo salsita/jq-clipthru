@@ -15,6 +15,11 @@
     A very strange enchanted boy<br>
     They say he wandered very far<br>
     Very far, over land and sea<br>
+    <svg width="0" height="0">
+        <clipPath id="clipping">
+            <polygon points="0 100, 300 30, 220 290" />
+        </clipPath>
+    </svg>
 </div>
 
 <div class="underlay underlay-0" data-jq-clipthru="testclass-0"></div>
@@ -35,10 +40,12 @@
 
 <div class="underlay underlay-5" data-jq-clipthru="testclass-0"></div>
 
+
+
 <script>
     $(document).ready(function(){
         $('#tester-unique').clipthru({
-            autoUpdate: true,
+            autoUpdate: false,
             autoUpdateInterval: 30,
             debug: true
         })

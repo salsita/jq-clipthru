@@ -1,12 +1,16 @@
 (($) ->
   $.widget "salsita.clipthru",
 
+    # TODO
+    # add an SVG cutout to the original element as a clipOriginal menu option
+    # remove simpleMode, it's bullshit
+    # add an option to create new clones on collision instead of precaching
+    # add option to relay CSS and mouse events to the clones and original
+
     options:
-      method: ['clip', 'clip-path']
       dataAttribute: 'jq-clipthru'
       simpleMode: false
       collisionTarget: null
-      cloneOnCollision: false # Coming soon.
       keepClonesInHTML: false
       removeAttrOnClone: ['id']
       blockSource: null

@@ -66,6 +66,10 @@ body {
     -webkit-filter: grayscale(100%);
 }
 
+.tester#tester-unique {
+  -webkit-clip-path: url(#clipping);
+}
+
 .jq-clipthru-clone {
   opacity: 1;
 }
