@@ -6,7 +6,7 @@ body, html {
 
 body {
     font-family: 'Press Start 2P', cursive;
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .tester {
@@ -67,7 +67,10 @@ body {
 }
 
 .tester#tester-unique {
-  -webkit-clip-path: url(#clipping);
+  //-webkit-mask:url(circle.svg) left top no-repeat; /* Chrome/Safari (Webkit) */
+  //mask: url(#maska); /* Firefox */
+  //clip-path: url("#c1");
+  //-webkit-clip-path: url(#c1);
 }
 
 .jq-clipthru-clone {

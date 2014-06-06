@@ -6,6 +6,16 @@
     # remove simpleMode, it's bullshit
     # add an option to create new clones on collision instead of precaching
     # add option to relay CSS and mouse events to the clones and original
+  
+    # webkit can't get a mask from inline svg (only file), webkit doesn't support a real svg mask element
+    # webkit mask treats any color as opaque, not just white (makes doing the inverse cutout very hard)
+    # append new structure dynamically to a blank external svg?
+    # !!! https://mdn.mozillademos.org/files/2665/clipdemo.xhtml
+    # http://stackoverflow.com/questions/4817999/svg-clippath-to-clip-the-outer-content-out
+    # http://stackoverflow.com/questions/20237594/clip-path-web-kit-mask-works-when-svg-is-seperate-file-but-not-when-inline?rq=1
+    # http://thenittygritty.co/css-masking
+    # http://stackoverflow.com/questions/20600608/svg-mask-tag-required-for-firefox-but-appears-to-break-css-mask-in-chrome
+    # http://collidercreative.com/how-to-create-css-image-masks-for-the-web-with-svgs/
 
     options:
       dataAttribute: 'jq-clipthru'
