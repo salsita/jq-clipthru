@@ -19,18 +19,17 @@
 
     options:
       dataAttribute: 'jq-clipthru'
-      simpleMode: false
       collisionTarget: null
       keepClonesInHTML: false
       removeAttrOnClone: ['id']
       blockSource: null
+      maskOriginal: true
       updateOnScroll: true
       updateOnResize: true
       updateOnZoom: true
       updateOnCSSTransitionEnd: false
       autoUpdate: false
       autoUpdateInterval: 100
-      broadcastEvents: true
       debug: false
 
     _create: ->
@@ -43,6 +42,7 @@
       @allBlocks = null
       @allClones = null
       @collidingBlocks = []
+      @svgMaskInitialized = false
       @_initWidget()
 
     _initWidget: ->
@@ -114,8 +114,7 @@
           _self.allClones = clone
       if @options.keepClonesInHTML
         @allClones.insertAfter @element
-      if @options.broadcastEvents
-        @_triggerEvent "clonesCreated.#{@options.dataAttribute}", @allClones
+      @_triggerEvent "clonesCreated.#{@options.dataAttribute}", @allClones
 
     # Show or hide the colliding overlay clones.
     _updateOverlayClones: ->
@@ -130,8 +129,8 @@
             if not document.body.contains this
               $(this).insertAfter _self.element
           _self._clipOverlayClone this, _self._getCollisionArea(_self.collidingBlocks[id])
-          if _self.options.simpleMode is 'vertical'
-            _self._clipOverlayOriginal _self._getRelativeCollision(_self.collidingBlocks[id])
+          if _self.options.maskOriginal
+            _self._manageOriginMask()
         else
           if _self.options.keepClonesInHTML
             $(this).css
@@ -178,22 +177,71 @@
         (blockOffset.left <= _self.collisionTargetOffset.right) and
         (blockOffset.right >= _self.collisionTargetOffset.left)
           _self.collidingBlocks[$(this).data("#{_self.options.dataAttribute}-id")] = blockOffset
-          if _self.options.broadcastEvents and !wasCollidedBefore
-            _self._triggerEvent "collisionStart.#{_self.options.dataAttribute}", this
-        else if _self.options.broadcastEvents and wasCollidedBefore
-            _self._triggerEvent "collisionEnd.#{_self.options.dataAttribute}", this
+          console.log _self.collidingBlocks
+          if !wasCollidedBefore
+            delayEvent = -> _self._triggerEvent "collisionStart.#{_self.options.dataAttribute}", this
+            setTimeout delayEvent, 0
+        else if wasCollidedBefore
+          delayEvent = -> _self._triggerEvent "collisionEnd.#{_self.options.dataAttribute}", this
+          setTimeout delayEvent, 0
 
     _clipOverlayClone: (clone, offset) ->
-      if @options.simpleMode is 'vertical'
-        $(clone).css
-          'clip': "rect(#{offset[0]}px auto #{offset[2]}px auto)"
-      else
-        $(clone).css
-          'clip': "rect(#{offset[0]}px #{offset[1]}px #{offset[2]}px #{offset[3]}px)"
+      $(clone).css
+        'clip': "rect(#{offset[0]}px #{offset[1]}px #{offset[2]}px #{offset[3]}px)"
 
     _clipOverlayOriginal: (offset) ->
       @element.css
         'clip': "rect(#{offset[0]}px auto #{offset[1]}px auto)"
+        
+    _manageOriginMask: ->
+      _self = this
+      
+      manageSVGObject = ->
+        _self.element.css
+          'mask': 'none'
+        console.log "OMFG", _self.collidingBlocks
+        $("##{_self.options.dataAttribute}-origin-mask-wrapper").remove()
+        if _self.collidingBlocks.length > 0
+          
+          collisionMask = ''
+          for block, i in _self.collidingBlocks
+            if _self.collidingBlocks.hasOwnProperty i
+              collisionMask = collisionMask +
+                "<rect
+                   x='10'
+                   y='10'
+                   width='100'
+                   height='100'
+                   fill='black'/>"
+
+          maskTemplate = $("<svg id='#{_self.options.dataAttribute}-origin-mask-wrapper' height='0' style='position: absolute; z-index: -1;'>
+                              <defs>
+                                <mask id='#{_self.options.dataAttribute}-origin-mask' maskUnits='userSpaceOnUse'>
+                                  <rect id='#{_self.options.dataAttribute}-origin-mask-fill' x='0' y='0' width='242' height='242' fill='white' />
+                                  #{collisionMask}
+                                </mask>
+                              </defs>
+                            </svg>")
+          $('body').append maskTemplate
+          _self.element.css
+            'mask': "url(##{_self.options.dataAttribute}-origin-mask)"
+          
+        
+      updateSVGProperties = ->
+        #console.log "woot"
+      
+      
+      if @svgMaskInitialized
+        # Just change attributes of the SVG mask.
+        updateSVGProperties()
+      else
+        # Create a new SVG object in the DOM.
+        manageSVGObject()
+        # Bind to recreate the SVG object in the DOM. 
+        @element.on "collisionStart.#{_self.options.dataAttribute} collisionEnd.#{_self.options.dataAttribute}", (e,el) ->
+          manageSVGObject()
+        @svgMaskInitialized = true
+        @_manageOriginMask()
 
     _attachListeners: ->
       _self = this

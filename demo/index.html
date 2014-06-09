@@ -4,12 +4,13 @@
     <title></title>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../build/jquery-ui-1.10.4.custom.min.js"></script>
-    <script type="text/javascript" src="../build/jq-clipthru.min.js"></script>
+    <script type="text/javascript" src="../src/jq-clipthru.js"></script>
     <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<!--
 <svg height="0" style="position: absolute; z-index: -1;">
   <g id="webkit-maska">
     <rect x="10" y="10" width="200" height="120" fill="black" />
@@ -24,7 +25,15 @@
   </defs>
 </svg>
 
-<div class="tester" id="tester-unique" style="mask: url(#maska); -webkit-mask: url(#webkit-maska)">
+<svg xmlns="http://www.w3.org/2000/svg" width="242" height="242">
+    <clipPath id="supertest">
+      <rect id="thatthing" x="20" y="20" width="100" height="100"/>
+    </clipPath>
+</svg>
+
+-->
+
+<div class="tester" id="tester-unique">
   There was a boy<br>
   A very strange enchanted boy<br>
   They say he wandered very far<br>
@@ -49,7 +58,15 @@
 
 <div class="underlay underlay-5" data-jq-clipthru="testclass-0"></div>
 
+<div class="underlay underlay-6" data-jq-clipthru="testclass-4"></div>
 
+<div class="underlay underlay-7" data-jq-clipthru="testclass-0"></div>
+
+<div class="underlay underlay-8" data-jq-clipthru="testclass-4"></div>
+
+<div class="underlay underlay-9" data-jq-clipthru="testclass-0"></div>
+
+<svg style="position: absolute; z-index: -1;" height="0" id="jq-clipthru-origin-mask-wrapper">                        <defs>                          <mask maskUnits="userSpaceOnUse" id="jq-clipthru-origin-mask">                            <rect fill="white" height="242" width="242" y="0" x="0" id="jq-clipthru-origin-mask-fill"/>                          <rect fill="black" height="120" width="200" y="10" x="10" id="jq-clipthru-origin-mask-filter-id-2"></rect></mask>                        </defs>                      </svg>
 
 <script>
     $(document).ready(function(){
