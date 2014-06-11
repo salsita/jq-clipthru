@@ -6,7 +6,7 @@
 `/build` directory contains the latest minified working version that corresponds to the documentation below.
 
 **IMPORTANT** - You can currently only use the library on elements that are either `position: absolute` or `fixed`  
-This will be rectified in future versions with optional SVG `mask/clipPath` masking, but those have serious drawbacks for most cases where you need to interact with the clipped elements.  
+This limitation will be made optional in future versions with SVG `mask/clipPath` masking, but unfortunately SVG masking is a post-process which has serious drawbacks for most cases where you need to interact with the clipped elements.  
 
 ## Options
 *Example*  
