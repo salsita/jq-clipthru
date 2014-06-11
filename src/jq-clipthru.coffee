@@ -23,7 +23,7 @@
       keepClonesInHTML: false
       removeAttrOnClone: ['id']
       blockSource: null
-      maskOriginal: true
+      maskOriginal: false
       updateOnScroll: true
       updateOnResize: true
       updateOnZoom: true
@@ -199,7 +199,6 @@
       manageSVGObject = ->
         _self.element.css
           'mask': 'none'
-        console.log "OMFG", _self.collidingBlocks
         $("##{_self.options.dataAttribute}-origin-mask-wrapper").remove()
         if _self.collidingBlocks.length > 0
           
