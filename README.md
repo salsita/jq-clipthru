@@ -10,7 +10,7 @@
 `$('#menu').clipthru({  
   autoUpdate: true,  
   autoUpdateInterval: true  
-});`
+})`
 
 - `dataAttribute` - The data- attribute clipthru uses internally and externally, default `jq-clipthru`  
 - `blockSource` - By default, jq-clipthru searches the DOM for elements with a `data-jq-clipthru` attribute and uses those as the source for collision detection. You can instead pass an array of jQuery selectors using this option. Example `{'clone-class': ['.el-1', '#THISDIV:first-child']}`  
@@ -27,7 +27,7 @@
 
 ## Public methods
 *Examples*  
-`$('#menu').clipthru('refresh');`  
+`$('#menu').clipthru('refresh')`  
 
 - `refresh` - Recalculates everything.   
 - `destroy` - Murders the instance.
