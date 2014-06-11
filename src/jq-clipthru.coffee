@@ -2,15 +2,11 @@
   $.widget "salsita.clipthru",
 
     # TODO
-    # add an SVG cutout to the original element as a clipOriginal menu option
-    # remove simpleMode, it's bullshit
     # add an option to create new clones on collision instead of precaching
-    # add option to relay CSS and mouse events to the clones and original
+    # add SVG mask/clipPath support for Chrome and IE as maskOriginal
   
-    # webkit can't get a mask from inline svg (only file), webkit doesn't support a real svg mask element
-    # webkit mask treats any color as opaque, not just white (makes doing the inverse cutout very hard)
-    # append new structure dynamically to a blank external svg?
-    # !!! https://mdn.mozillademos.org/files/2665/clipdemo.xhtml
+    # webkit doesn't support a real svg mask element, just an alpha channel object
+    # https://mdn.mozillademos.org/files/2665/clipdemo.xhtml
     # http://stackoverflow.com/questions/4817999/svg-clippath-to-clip-the-outer-content-out
     # http://stackoverflow.com/questions/20237594/clip-path-web-kit-mask-works-when-svg-is-seperate-file-but-not-when-inline?rq=1
     # http://thenittygritty.co/css-masking
@@ -23,7 +19,7 @@
       keepClonesInHTML: false
       removeAttrOnClone: ['id']
       blockSource: null
-      maskOriginal: false
+      maskOriginal: true
       updateOnScroll: true
       updateOnResize: true
       updateOnZoom: true
@@ -150,18 +146,36 @@
       clipOffset.push blockOffset.bottom - @overlayOffset.top
       clipOffset.push @overlayOffset.width - (@overlayOffset.right - blockOffset.left)
       return clipOffset
-
-    _getRelativeCollision: (blockOffset) ->
-      clipOffset = []
-      if @collisionTargetOffset.top <= blockOffset.top
-        clipOffset.push 0
-        clipOffset.push blockOffset.top - @overlayOffset.top
-      else if @collisionTargetOffset.bottom >= blockOffset.bottom
-        clipOffset.push @overlayOffset.height - (@overlayOffset.bottom - blockOffset.bottom)
-        clipOffset.push @overlayOffset.bottom
-      else
-        clipOffset = [0, 0]
-      return clipOffset
+    
+    # Calculate collision area relative to collision target.
+    _getRelativeCollisionArea: (bl, cl) ->
+      obj =
+        x: 0
+        y: 0
+        width: 0
+        height: 0
+      # Get X axis position.
+      if bl.left > cl.left
+        obj.x = bl.left - cl.left
+      # Get Y axis position.
+      if bl.top > cl.top
+        obj.y = bl.top - cl.top
+      # Get width.
+      objWidth = 0
+      blRight = bl.left + bl.width
+      clRight = cl.left + cl.width
+      if blRight < clRight
+        # Possible .5 pixel rounding errors, not overly important given it's used on a transparent element.
+        objWidth = clRight - blRight
+      obj.width = cl.width - obj.x - objWidth
+      # Get height.
+      objHeight = 0
+      blBottom = bl.top + bl.height
+      clBottom = cl.top + cl.height
+      if blBottom < clBottom
+        objHeight = clBottom - blBottom
+      obj.height = cl.height - obj.y - objHeight
+      return obj
 
     # Return ids for blocks that collide with the overlay.
     _getCollidingBlocks: ->
@@ -177,7 +191,6 @@
         (blockOffset.left <= _self.collisionTargetOffset.right) and
         (blockOffset.right >= _self.collisionTargetOffset.left)
           _self.collidingBlocks[$(this).data("#{_self.options.dataAttribute}-id")] = blockOffset
-          console.log _self.collidingBlocks
           if !wasCollidedBefore
             delayEvent = -> _self._triggerEvent "collisionStart.#{_self.options.dataAttribute}", this
             setTimeout delayEvent, 0
@@ -201,34 +214,46 @@
           'mask': 'none'
         $("##{_self.options.dataAttribute}-origin-mask-wrapper").remove()
         if _self.collidingBlocks.length > 0
-          
           collisionMask = ''
+          # Generate a black rectangular mask for each collision.
           for block, i in _self.collidingBlocks
             if _self.collidingBlocks.hasOwnProperty i
               collisionMask = collisionMask +
                 "<rect
-                   x='10'
-                   y='10'
-                   width='100'
-                   height='100'
+                   id='#{_self.options.dataAttribute}-origin-mask-rect-#{i}'
+                   x='0'
+                   y='0'
+                   width='0'
+                   height='0'
                    fill='black'/>"
-
+          # Create the SVG object and add to DOM.
           maskTemplate = $("<svg id='#{_self.options.dataAttribute}-origin-mask-wrapper' height='0' style='position: absolute; z-index: -1;'>
                               <defs>
-                                <mask id='#{_self.options.dataAttribute}-origin-mask' maskUnits='userSpaceOnUse'>
-                                  <rect id='#{_self.options.dataAttribute}-origin-mask-fill' x='0' y='0' width='242' height='242' fill='white' />
+                                <mask id='#{_self.options.dataAttribute}-origin-mask'>
+                                  <rect id='#{_self.options.dataAttribute}-origin-mask-fill' x='0' y='0' width='0' height='0' fill='white' />
                                   #{collisionMask}
                                 </mask>
                               </defs>
                             </svg>")
           $('body').append maskTemplate
+          # Apply the Firefox luminance mask.
           _self.element.css
             'mask': "url(##{_self.options.dataAttribute}-origin-mask)"
-          
-        
-      updateSVGProperties = ->
-        #console.log "woot"
       
+      # Update SVG mask attributes with real data.
+      updateSVGProperties = ->
+        maskFill = $("##{_self.options.dataAttribute}-origin-mask-fill")
+        maskFill.attr 'width', _self.collisionTargetOffset.width
+        maskFill.attr 'height', _self.collisionTargetOffset.height
+        for block, i in _self.collidingBlocks
+          if _self.collidingBlocks.hasOwnProperty i
+            maskRect = $("##{_self.options.dataAttribute}-origin-mask-rect-#{i}")
+            # Get mask dimensions.
+            maskDimensions = _self._getRelativeCollisionArea block, _self.collisionTargetOffset
+            maskRect.attr 'x', maskDimensions.x
+            maskRect.attr 'y', maskDimensions.y
+            maskRect.attr 'width', maskDimensions.width
+            maskRect.attr 'height', maskDimensions.height
       
       if @svgMaskInitialized
         # Just change attributes of the SVG mask.
@@ -236,11 +261,11 @@
       else
         # Create a new SVG object in the DOM.
         manageSVGObject()
-        # Bind to recreate the SVG object in the DOM. 
-        @element.on "collisionStart.#{_self.options.dataAttribute} collisionEnd.#{_self.options.dataAttribute}", (e,el) ->
+        # Bind to recreate the SVG object on collision update. 
+        @element.on "collisionStart.#{_self.options.dataAttribute} collisionEnd.#{_self.options.dataAttribute}", (e) ->
           manageSVGObject()
+          updateSVGProperties()
         @svgMaskInitialized = true
-        @_manageOriginMask()
 
     _attachListeners: ->
       _self = this

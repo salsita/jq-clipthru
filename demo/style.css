@@ -23,6 +23,10 @@ body {
     overflow: hidden;
 }
 
+.tester:not(#tester-unique) {
+  opacity: 0;
+}
+
 .tester.testclass-0 {
   color: white;
 }
