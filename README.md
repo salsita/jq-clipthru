@@ -3,6 +3,8 @@
 - An element collision detection library that uses CSS clip to display different element design clones over the exact collision area.
 - Click [here](http://salsita.github.io/jq-clipthru/demo/) for a demo.
 
+`/build` directory contains the latest minified working version that corresponds to the documentation below.
+
 ## Options
 *Example*  
 `$('#menu').clipthru({  
