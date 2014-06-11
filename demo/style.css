@@ -24,7 +24,7 @@ body {
 }
 
 .tester:not(#tester-unique) {
-  opacity: 0;
+  opacity: 1;
 }
 
 .tester.testclass-0 {
@@ -68,13 +68,6 @@ body {
   background-size: 100%;
   color: transparent;
     -webkit-filter: grayscale(100%);
-}
-
-.tester#tester-unique {
-  //-webkit-mask:url(circle.svg) left top no-repeat; /* Chrome/Safari (Webkit) */
-  //mask: url(#maska); /* Firefox */
-  //clip-path: url("#c1");
-  //-webkit-clip-path: url(#c1);
 }
 
 .jq-clipthru-clone {
@@ -126,6 +119,7 @@ body {
 .underlay.underlay-left-thumpah {
   width: 50%;
   float: left;
+  animation: thumpahOMG 3s infinite ease-in-out;
   -webkit-animation: thumpahOMG 3s infinite ease-in-out;
 }
 
@@ -133,13 +127,27 @@ body {
   clear: none;
   float: right;
   width: 50%;
+  animation: thumpahOMG 3s infinite ease-in-out;
   -webkit-animation: thumpahOMG 3s infinite ease-in-out;
+}
+
+@keyframes pulsateHogan {
+  0% { background-size: 100% 100%; }
+  50% { background-size: 150% 150%; }
+  100% { background-size: 100% 100%; }
 }
 
 @-webkit-keyframes pulsateHogan {
     0% { background-size: 100% 100%; }
     50% { background-size: 150% 150%; }
     100% { background-size: 100% 100%; }
+}
+
+@keyframes thumpahOMG {
+  0% { width: 0% }
+  10% { width: 50% }
+  50% { width: 50% }
+  100% { width: 0% }
 }
 
 @-webkit-keyframes  thumpahOMG {
