@@ -3,7 +3,6 @@
   (function($) {
     return $.widget("salsita.clipthru", {
       options: {
-        dataAttribute: 'jq-clipthru',
         collisionTarget: null,
         keepClonesInHTML: false,
         removeAttrOnClone: ['id'],
@@ -18,6 +17,7 @@
         debug: false
       },
       _create: function() {
+        this.dataAttribute = 'jq-clipthru';
         this.overlayOffset = null;
         if (this.options.collisionTarget) {
           this.collisionTarget = $(this.element.find(this.options.collisionTarget).get(0));
@@ -37,7 +37,7 @@
         this._getAllBlocks();
         if (this.allBlocks.length > 0) {
           this._logMessage("" + this.allBlocks.length + " blocks found", this.allBlocks);
-          this.collisionTarget.addClass("" + this.options.dataAttribute + "-origin");
+          this.collisionTarget.addClass("" + this.dataAttribute + "-origin");
           this._addIdToBlocks();
           this._attachListeners();
           this._createOverlayClones();
@@ -58,7 +58,7 @@
       },
       _logMessage: function(name, args) {
         if (this.options.debug) {
-          return console.debug("" + this.options.dataAttribute + ": " + name, args);
+          return console.debug("" + this.dataAttribute + ": " + name, args);
         }
       },
       _getAllBlocks: function() {
@@ -73,7 +73,7 @@
               _results1 = [];
               for (_i = 0, _len = blocks.length; _i < _len; _i++) {
                 block = blocks[_i];
-                $(block).data(this.options.dataAttribute, cls);
+                $(block).data(this.dataAttribute, cls);
                 if (this.allBlocks) {
                   _results1.push(this.allBlocks = this.allBlocks.add($(block)));
                 } else {
@@ -85,7 +85,7 @@
           }
           return _results;
         } else {
-          return this.allBlocks = $("[data-" + this.options.dataAttribute + "]");
+          return this.allBlocks = $("[data-" + this.dataAttribute + "]");
         }
       },
       _getOverlayOffset: function() {
@@ -97,7 +97,7 @@
         i = 0;
         _self = this;
         return this.allBlocks.each(function() {
-          $(this).data("" + _self.options.dataAttribute + "-id", i);
+          $(this).data("" + _self.dataAttribute + "-id", i);
           return i++;
         });
       },
@@ -114,9 +114,9 @@
               clone.removeAttr(attr);
             }
           }
-          clone.addClass("" + _self.options.dataAttribute + "-clone");
-          clone.addClass($(this).data(_self.options.dataAttribute));
-          clone.data("" + _self.options.dataAttribute + "-id", $(this).data("" + _self.options.dataAttribute + "-id"));
+          clone.addClass("" + _self.dataAttribute + "-clone");
+          clone.addClass($(this).data(_self.dataAttribute));
+          clone.data("" + _self.dataAttribute + "-id", $(this).data("" + _self.dataAttribute + "-id"));
           if (_self.allClones) {
             return _self.allClones = _self.allClones.add(clone);
           } else {
@@ -126,14 +126,14 @@
         if (this.options.keepClonesInHTML) {
           this.allClones.insertAfter(this.element);
         }
-        return this._triggerEvent("clonesCreated." + this.options.dataAttribute, this.allClones);
+        return this._triggerEvent("clonesCreated." + this.dataAttribute, this.allClones);
       },
       _updateOverlayClones: function() {
         var _self;
         _self = this;
         this.allClones.each(function() {
           var id;
-          id = $(this).data("" + _self.options.dataAttribute + "-id");
+          id = $(this).data("" + _self.dataAttribute + "-id");
           if (_self.collidingBlocks.hasOwnProperty(id)) {
             if (_self.options.keepClonesInHTML) {
               $(this).css({
@@ -210,19 +210,19 @@
         this.collidingBlocks = [];
         return this.allBlocks.each(function() {
           var blockOffset, delayEvent, wasCollidedBefore;
-          wasCollidedBefore = _self.collidingBlocksOld.hasOwnProperty($(this).data("" + _self.options.dataAttribute + "-id"));
+          wasCollidedBefore = _self.collidingBlocksOld.hasOwnProperty($(this).data("" + _self.dataAttribute + "-id"));
           blockOffset = this.getBoundingClientRect();
           if ((blockOffset.bottom >= _self.collisionTargetOffset.top) && (blockOffset.top <= _self.collisionTargetOffset.bottom) && (blockOffset.left <= _self.collisionTargetOffset.right) && (blockOffset.right >= _self.collisionTargetOffset.left)) {
-            _self.collidingBlocks[$(this).data("" + _self.options.dataAttribute + "-id")] = blockOffset;
+            _self.collidingBlocks[$(this).data("" + _self.dataAttribute + "-id")] = blockOffset;
             if (!wasCollidedBefore) {
               delayEvent = function() {
-                return _self._triggerEvent("collisionStart." + _self.options.dataAttribute, this);
+                return _self._triggerEvent("collisionStart." + _self.dataAttribute, this);
               };
               return setTimeout(delayEvent, 0);
             }
           } else if (wasCollidedBefore) {
             delayEvent = function() {
-              return _self._triggerEvent("collisionEnd." + _self.options.dataAttribute, this);
+              return _self._triggerEvent("collisionEnd." + _self.dataAttribute, this);
             };
             return setTimeout(delayEvent, 0);
           }
@@ -246,26 +246,26 @@
           _self.element.css({
             'mask': 'none'
           });
-          $("#" + _self.options.dataAttribute + "-origin-mask-wrapper").remove();
+          $("#" + _self.dataAttribute + "-origin-mask-wrapper").remove();
           if (_self.collidingBlocks.length > 0) {
             collisionMask = '';
             _ref = _self.collidingBlocks;
             for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
               block = _ref[i];
               if (_self.collidingBlocks.hasOwnProperty(i)) {
-                collisionMask = collisionMask + ("<rect                   id='" + _self.options.dataAttribute + "-origin-mask-rect-" + i + "'                   x='0'                   y='0'                   width='0'                   height='0'                   fill='black'/>");
+                collisionMask = collisionMask + ("<rect                   id='" + _self.dataAttribute + "-origin-mask-rect-" + i + "'                   x='0'                   y='0'                   width='0'                   height='0'                   fill='black'/>");
               }
             }
-            maskTemplate = $("<svg id='" + _self.options.dataAttribute + "-origin-mask-wrapper' height='0' style='position: absolute; z-index: -1;'>                              <defs>                                <mask id='" + _self.options.dataAttribute + "-origin-mask'>                                  <rect id='" + _self.options.dataAttribute + "-origin-mask-fill' x='0' y='0' width='0' height='0' fill='white' />                                  " + collisionMask + "                                </mask>                              </defs>                            </svg>");
+            maskTemplate = $("<svg id='" + _self.dataAttribute + "-origin-mask-wrapper' height='0' style='position: absolute; z-index: -1;'>                              <defs>                                <mask id='" + _self.dataAttribute + "-origin-mask'>                                  <rect id='" + _self.dataAttribute + "-origin-mask-fill' x='0' y='0' width='0' height='0' fill='white' />                                  " + collisionMask + "                                </mask>                              </defs>                            </svg>");
             $('body').append(maskTemplate);
             return _self.element.css({
-              'mask': "url(#" + _self.options.dataAttribute + "-origin-mask)"
+              'mask': "url(#" + _self.dataAttribute + "-origin-mask)"
             });
           }
         };
         updateSVGProperties = function() {
           var block, i, maskDimensions, maskFill, maskRect, _i, _len, _ref, _results;
-          maskFill = $("#" + _self.options.dataAttribute + "-origin-mask-fill");
+          maskFill = $("#" + _self.dataAttribute + "-origin-mask-fill");
           maskFill.attr('width', _self.collisionTargetOffset.width);
           maskFill.attr('height', _self.collisionTargetOffset.height);
           _ref = _self.collidingBlocks;
@@ -273,7 +273,7 @@
           for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
             block = _ref[i];
             if (_self.collidingBlocks.hasOwnProperty(i)) {
-              maskRect = $("#" + _self.options.dataAttribute + "-origin-mask-rect-" + i);
+              maskRect = $("#" + _self.dataAttribute + "-origin-mask-rect-" + i);
               maskDimensions = _self._getRelativeCollisionArea(block, _self.collisionTargetOffset);
               maskRect.attr('x', maskDimensions.x);
               maskRect.attr('y', maskDimensions.y);
@@ -289,7 +289,7 @@
           return updateSVGProperties();
         } else {
           manageSVGObject();
-          this.element.on("collisionStart." + _self.options.dataAttribute + " collisionEnd." + _self.options.dataAttribute, function(e) {
+          this.element.on("collisionStart." + _self.dataAttribute + " collisionEnd." + _self.dataAttribute, function(e) {
             manageSVGObject();
             return updateSVGProperties();
           });
@@ -299,7 +299,7 @@
       _attachListeners: function() {
         var _self;
         _self = this;
-        $(window).on("" + (this.options.updateOnResize ? 'resize.' + this.options.dataAttribute : void 0) + " " + (this.options.updateOnScroll ? 'scroll.' + this.options.dataAttribute : void 0), function() {
+        $(window).on("" + (this.options.updateOnResize ? 'resize.' + this.dataAttribute : void 0) + " " + (this.options.updateOnScroll ? 'scroll.' + this.dataAttribute : void 0), function() {
           return _self.refresh();
         });
         if (this.options.updateOnCSSTransitionEnd) {
@@ -316,7 +316,7 @@
         return this._updateOverlayClones();
       },
       _destroy: function() {
-        $(window).off("resize." + this.options.dataAttribute + " scroll." + this.options.dataAttribute);
+        $(window).off("resize." + this.dataAttribute + " scroll." + this.dataAttribute);
         this.element.off();
         clearInterval(this.autoUpdateTimer);
         this.element.css({

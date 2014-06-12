@@ -14,7 +14,6 @@
     # http://collidercreative.com/how-to-create-css-image-masks-for-the-web-with-svgs/
 
     options:
-      dataAttribute: 'jq-clipthru'
       collisionTarget: null
       keepClonesInHTML: false
       removeAttrOnClone: ['id']
@@ -29,6 +28,7 @@
       debug: false
 
     _create: ->
+      @dataAttribute = 'jq-clipthru'
       @overlayOffset = null
       if @options.collisionTarget
         @collisionTarget = $(@element.find(@options.collisionTarget).get(0))
@@ -46,7 +46,7 @@
       @_getAllBlocks()
       if @allBlocks.length > 0
         @_logMessage "#{@allBlocks.length} blocks found", @allBlocks
-        @collisionTarget.addClass "#{@options.dataAttribute}-origin"
+        @collisionTarget.addClass "#{@dataAttribute}-origin"
         @_addIdToBlocks()
         @_attachListeners()
         @_createOverlayClones()
@@ -65,20 +65,20 @@
 
     _logMessage: (name, args) ->
       if @options.debug
-        console.debug "#{@options.dataAttribute}: #{name}", args
+        console.debug "#{@dataAttribute}: #{name}", args
 
     # Get all existing blocks.
     _getAllBlocks: ->
       if @options.blockSource
         for cls, blocks of @options.blockSource
           for block in blocks
-            $(block).data @options.dataAttribute, cls
+            $(block).data @dataAttribute, cls
             if @allBlocks
               @allBlocks = @allBlocks.add $(block)
             else
               @allBlocks = $(block)
       else
-        @allBlocks = $("[data-#{@options.dataAttribute}]")
+        @allBlocks = $("[data-#{@dataAttribute}]")
 
     # Get offsets of the overlay element.
     _getOverlayOffset: ->
@@ -90,7 +90,7 @@
       i = 0
       _self = this
       @allBlocks.each ->
-        $(this).data "#{_self.options.dataAttribute}-id", i
+        $(this).data "#{_self.dataAttribute}-id", i
         i++
 
     # Create an overlay clone for each potential block and keep it cached.
@@ -101,22 +101,22 @@
         if _self.options.removeAttrOnClone
           for attr in _self.options.removeAttrOnClone
             clone.removeAttr attr
-        clone.addClass "#{_self.options.dataAttribute}-clone"
-        clone.addClass $(this).data _self.options.dataAttribute
-        clone.data "#{_self.options.dataAttribute}-id", $(this).data("#{_self.options.dataAttribute}-id")
+        clone.addClass "#{_self.dataAttribute}-clone"
+        clone.addClass $(this).data _self.dataAttribute
+        clone.data "#{_self.dataAttribute}-id", $(this).data("#{_self.dataAttribute}-id")
         if _self.allClones
           _self.allClones = _self.allClones.add clone
         else
           _self.allClones = clone
       if @options.keepClonesInHTML
         @allClones.insertAfter @element
-      @_triggerEvent "clonesCreated.#{@options.dataAttribute}", @allClones
+      @_triggerEvent "clonesCreated.#{@dataAttribute}", @allClones
 
     # Show or hide the colliding overlay clones.
     _updateOverlayClones: ->
       _self = this
       @allClones.each ->
-        id = $(this).data("#{_self.options.dataAttribute}-id")
+        id = $(this).data("#{_self.dataAttribute}-id")
         if _self.collidingBlocks.hasOwnProperty id
           if _self.options.keepClonesInHTML
             $(this).css
@@ -183,19 +183,19 @@
       @collidingBlocksOld = @collidingBlocks
       @collidingBlocks = []
       @allBlocks.each ->
-        wasCollidedBefore = _self.collidingBlocksOld.hasOwnProperty($(this).data("#{_self.options.dataAttribute}-id"))
+        wasCollidedBefore = _self.collidingBlocksOld.hasOwnProperty($(this).data("#{_self.dataAttribute}-id"))
         # Does the block collide with the overlay?
         blockOffset = this.getBoundingClientRect()
         if (blockOffset.bottom >= _self.collisionTargetOffset.top) and
         (blockOffset.top <= _self.collisionTargetOffset.bottom) and
         (blockOffset.left <= _self.collisionTargetOffset.right) and
         (blockOffset.right >= _self.collisionTargetOffset.left)
-          _self.collidingBlocks[$(this).data("#{_self.options.dataAttribute}-id")] = blockOffset
+          _self.collidingBlocks[$(this).data("#{_self.dataAttribute}-id")] = blockOffset
           if !wasCollidedBefore
-            delayEvent = -> _self._triggerEvent "collisionStart.#{_self.options.dataAttribute}", this
+            delayEvent = -> _self._triggerEvent "collisionStart.#{_self.dataAttribute}", this
             setTimeout delayEvent, 0
         else if wasCollidedBefore
-          delayEvent = -> _self._triggerEvent "collisionEnd.#{_self.options.dataAttribute}", this
+          delayEvent = -> _self._triggerEvent "collisionEnd.#{_self.dataAttribute}", this
           setTimeout delayEvent, 0
 
     _clipOverlayClone: (clone, offset) ->
@@ -212,7 +212,7 @@
       manageSVGObject = ->
         _self.element.css
           'mask': 'none'
-        $("##{_self.options.dataAttribute}-origin-mask-wrapper").remove()
+        $("##{_self.dataAttribute}-origin-mask-wrapper").remove()
         if _self.collidingBlocks.length > 0
           collisionMask = ''
           # Generate a black rectangular mask for each collision.
@@ -220,17 +220,17 @@
             if _self.collidingBlocks.hasOwnProperty i
               collisionMask = collisionMask +
                 "<rect
-                   id='#{_self.options.dataAttribute}-origin-mask-rect-#{i}'
+                   id='#{_self.dataAttribute}-origin-mask-rect-#{i}'
                    x='0'
                    y='0'
                    width='0'
                    height='0'
                    fill='black'/>"
           # Create the SVG object and add to DOM.
-          maskTemplate = $("<svg id='#{_self.options.dataAttribute}-origin-mask-wrapper' height='0' style='position: absolute; z-index: -1;'>
+          maskTemplate = $("<svg id='#{_self.dataAttribute}-origin-mask-wrapper' height='0' style='position: absolute; z-index: -1;'>
                               <defs>
-                                <mask id='#{_self.options.dataAttribute}-origin-mask'>
-                                  <rect id='#{_self.options.dataAttribute}-origin-mask-fill' x='0' y='0' width='0' height='0' fill='white' />
+                                <mask id='#{_self.dataAttribute}-origin-mask'>
+                                  <rect id='#{_self.dataAttribute}-origin-mask-fill' x='0' y='0' width='0' height='0' fill='white' />
                                   #{collisionMask}
                                 </mask>
                               </defs>
@@ -238,16 +238,16 @@
           $('body').append maskTemplate
           # Apply the Firefox luminance mask.
           _self.element.css
-            'mask': "url(##{_self.options.dataAttribute}-origin-mask)"
+            'mask': "url(##{_self.dataAttribute}-origin-mask)"
       
       # Update SVG mask attributes with real data.
       updateSVGProperties = ->
-        maskFill = $("##{_self.options.dataAttribute}-origin-mask-fill")
+        maskFill = $("##{_self.dataAttribute}-origin-mask-fill")
         maskFill.attr 'width', _self.collisionTargetOffset.width
         maskFill.attr 'height', _self.collisionTargetOffset.height
         for block, i in _self.collidingBlocks
           if _self.collidingBlocks.hasOwnProperty i
-            maskRect = $("##{_self.options.dataAttribute}-origin-mask-rect-#{i}")
+            maskRect = $("##{_self.dataAttribute}-origin-mask-rect-#{i}")
             # Get mask dimensions.
             maskDimensions = _self._getRelativeCollisionArea block, _self.collisionTargetOffset
             maskRect.attr 'x', maskDimensions.x
@@ -262,14 +262,14 @@
         # Create a new SVG object in the DOM.
         manageSVGObject()
         # Bind to recreate the SVG object on collision update. 
-        @element.on "collisionStart.#{_self.options.dataAttribute} collisionEnd.#{_self.options.dataAttribute}", (e) ->
+        @element.on "collisionStart.#{_self.dataAttribute} collisionEnd.#{_self.dataAttribute}", (e) ->
           manageSVGObject()
           updateSVGProperties()
         @svgMaskInitialized = true
 
     _attachListeners: ->
       _self = this
-      $(window).on "#{'resize.' + @options.dataAttribute if @options.updateOnResize} #{'scroll.' + @options.dataAttribute if @options.updateOnScroll}", ->
+      $(window).on "#{'resize.' + @dataAttribute if @options.updateOnResize} #{'scroll.' + @dataAttribute if @options.updateOnScroll}", ->
         _self.refresh()
 
       if @options.updateOnCSSTransitionEnd
@@ -283,7 +283,7 @@
       @_updateOverlayClones()
 
     _destroy: ->
-      $(window).off "resize.#{@options.dataAttribute} scroll.#{@options.dataAttribute}"
+      $(window).off "resize.#{@dataAttribute} scroll.#{@dataAttribute}"
       @element.off()
       clearInterval @autoUpdateTimer
       @element.css
