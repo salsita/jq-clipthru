@@ -15,7 +15,6 @@ This limitation will be made optional in future versions with SVG `mask/clipPath
   autoUpdateInterval: true  
 })`
 
-- `dataAttribute` - The data- attribute clipthru uses internally and externally, default `jq-clipthru`  
 - `blockSource` - By default, jq-clipthru searches the DOM for elements with a `data-jq-clipthru` attribute and uses those as the source for collision detection. You can instead pass an array of jQuery selectors using this option. Example `{'clone-class': ['.el-1', '#THISDIV:first-child']}`  
 - `collisionTarget` - When the element upon which jq-clipthru is called is not the real target of the collision logic. Useful when you're using extra wrappers to position the cloned element and need those with each clone for CSS layout purposes, but don't need to detect collision based on the wrapper's offset. Accepts a jQuery selector string, by default this is the element on which jq-clipthru is instantiated.  
 - `keepClonesInHTML` - By default, jq-clipthru removes element clones from the DOM when they are not displayed. This setting will override that behavior and keep the clones in HTML at all times and show/hide them using `display: block/none`. This can be useful for 3rd party DOM manipulation and simplify custom interactions as you can target all the clones yourself at any time. Default `false`  
