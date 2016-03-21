@@ -24,7 +24,6 @@ This limitation will be made optional in future versions with SVG `mask/clipPath
 - `updateOnCSSTransitionEnd` - Recalculates collision after the base element CSS transition finishes - useful when your transition may change the size of the target, forcing another update. Accepts the name of the CSS transition attribute that should be watched. Example: `'max-height'`  
 - `autoUpdate` - Updates the collision detection continuously every xx seconds. Default `false`  
 - `autoUpdateInterval` - Frequency of auto updates in milliseconds. Default `100`  
-- `broadCastEvents` - Broadcasts namespaced events on the target element for collisions along with the target element - `collisionStart.jq-clipthru` `collisionEnd.jq-clipthru` Default `true`  
 - `debug` - Prints info about it's internals into the browser console, default `false`  
 
 ## Public methods
@@ -32,4 +31,6 @@ This limitation will be made optional in future versions with SVG `mask/clipPath
 `$('#menu').clipthru('refresh')`  
 
 - `refresh` - Recalculates everything.   
-- `destroy` - Murders the instance.
+- `destroy` - Murders the instance.  
+  
+`jq-clipthru` also broadcasts namespaced events on the target element for collisions along with the target element - `collisionStart.jq-clipthru` `collisionEnd.jq-clipthru`.
